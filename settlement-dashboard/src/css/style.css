@@ -1,0 +1,896 @@
+@font-face {
+    font-family: 'Ownglyph_corncorn-Rg';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_corncorn-Rg.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+body, button, input, select, textarea {  /*모든 버튼 폰트 적용*/
+    font-family: 'Ownglyph_corncorn-Rg', sans-serif;
+}
+
+/* 메뉴바 전체 글꼴 적용 */
+.menu-bar, .menu-item, .menu-item .dropdown a {
+    font-family: 'Ownglyph_corncorn-Rg', sans-serif !important;
+}
+
+
+/* 대시보드 컨테이너 */
+.dashboard-container {
+    min-height: 100%;
+    flex-direction: column;
+    gap: 20px;
+    justify-items: center;
+}
+
+.dashboard-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #009879;
+}
+
+.cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 40px;
+}
+
+.card {
+    flex: 1 1 200px;
+    border-radius: 8px;
+    padding: 10px;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    justify-content: center;
+}
+
+.card-header {
+    font-size: 22px;
+    font-weight: bold;
+    color: #009879;
+    margin-bottom: 10px;
+    width: 100%;
+    max-width: 100%;
+    justify-self: center;
+}
+
+.card-body {
+   font-size: 18px;
+    justify-items: right;
+    color: #aaa;
+}
+
+.tax-box{
+    font-size: 18px;
+    justify-items: right;
+    color: #aaa;
+}
+
+.card-body p {
+    margin: 5px 0;
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 50px;
+    background-color: #fff;
+}
+
+.menu-bar {
+    display: flex;
+    gap: 15px; /* 메뉴 아이템 간 간격 */
+}
+
+.user-actions {
+    display: flex;
+    gap: 10px; /* 검색+버튼 간격 */
+}
+
+body {
+    margin: 0; /* 기본 브라우저 여백 제거 */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* 화면 전체 높이 채움 */
+    justify-content: center;
+}
+
+footer {
+    position: relative; /* fixed 제거 */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #009879;
+    color: white;
+    text-align: center;
+    padding: 20px 50px;
+    box-sizing: border-box;
+    z-index: 1000; /* 다른 요소보다 위 */
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.footer-left h3 {
+    font-weight: bold;
+}
+
+.footer-links {
+    display: flex;
+    gap: 60px;
+}
+
+.footer-links div {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-links h4 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    margin: 4px 0;
+    font-size: 14px;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+.footer-bottom {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding-top: 15px;
+    font-size: 12px;
+}
+
+
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 70px;
+    margin-right: 40px;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: #009879;
+    font-weight: bold;
+}
+
+/* 메뉴 글자 hover 효과 */
+.menu-item,
+.menu-item a {
+    font-size: 20px;
+    position: relative;
+    text-decoration: none;
+    color: #009879;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-block;
+    white-space: nowrap;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.menu-item:hover {
+    color: #006644;
+    transform: scale(1.1);
+}
+
+/* 메뉴 바 */
+.menu-bar {
+    background-color: white;
+    padding: 10px;
+    display: flex;
+    gap: 50px;
+    align-items: center;
+}
+
+/* 드롭다운 박스 */
+.dropdown {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    font-weight: bold;
+    font-size: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    overflow: hidden;
+    z-index: 1000;
+    display: flex;
+    align-items: center;   /* 글자 가로 가운데 정렬 */
+    flex-direction: column;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+}
+
+/* 드롭다운 활성화 애니메이션 */
+.menu-item.active .dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* 드롭다운 링크 스타일 */
+.dropdown a {
+    font-weight: bold;
+    display: block;
+    width: 100%;
+    padding: 10px 20px;
+    text-align: center;        /* 글자 가운데 정렬 */
+    color: #009879;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+
+}
+
+/* 배너 이미지 애니메이션 */
+.logo img {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.logo img:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+}
+
+
+.search-container {
+    position: relative;
+    display: flex;
+    gap: 10px
+}
+
+.search-container input {
+    padding: 8px 12px;
+    border: 1px solid #009879;
+    border-radius: 5px;
+}
+
+.Search-button {
+    padding: 10px 20px;
+    background-color: #009879;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Ownglyph_corncorn-Rg', sans-serif !important; /* 폰트 박기 */
+}
+.login-button {
+    padding: 10px 20px;
+    background-color: #009879;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Ownglyph_corncorn-Rg', sans-serif !important;
+}
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* 화면 꽉 채움 */
+}
+
+html, body, #root {
+    height: 100%;   /* 전체 화면 기준 */
+    margin: 0;
+}
+
+/* main 영역이 남는 공간 모두 차지 */
+.content {
+    flex: 1;
+    overflow-y: auto; /* 내용 길면 스크롤 */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+
+.content-placeholder {
+    min-height: 500px;
+    padding-top: 20px;   /* 위쪽 여백만 줄임 */
+    padding-bottom: 50px; /* 아래쪽은 여유 둠 */
+    justify-content: center;  /* 가로 중앙 */
+    align-items: center;      /* 세로 중앙 */
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ================= 챗봇 스타일 ================= */
+/* 챗봇 창 */
+.chatbot-container {
+    width: 320px;
+    height: 400px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chatbot-button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background-color: #009879;
+    color: white;
+    font-size: 25px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.chatbot-button:hover {
+    transform: scale(1.1);
+    background-color: #006644;
+}
+
+.chatbot-popup {
+    position: absolute;
+    bottom: 500px;
+    right: 0;
+    width: 300px;
+    max-height: 400px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    font-size: 15px;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+}
+
+.chatbot-popup.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.chatbot-header {
+    background: #009879;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px 10px 0 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.chatbot-body {
+    padding: 10px;
+    background: white;
+    flex: 1;
+    overflow-y: auto;
+    font-size: 15px;
+}
+
+.chatbot-footer {
+    display: flex;
+    padding: 10px;
+    gap: 5px;
+}
+
+.chatbot-footer input {
+    flex: 1;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.chatbot-footer button {
+    padding: 5px 10px;
+    background: #009879;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.chatbot-footer button:hover {
+    background: #006644;
+}
+
+
+/* 동그라미 버튼 */
+.chatbot-circle {
+    width: 40px;
+    height: 40px;
+    background: #009879;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    margin-bottom: 10px;
+}
+
+.chatbot-launcher-container {
+    position: fixed;       /* 화면 기준 고정 */
+    bottom: 20px;         /* 푸터 위로 띄우기 */
+    right: 20px;
+    z-index: 9999;         /* 항상 위 */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.page-container {
+    position: static; /* 또는 relative OK */
+    overflow: visible;
+}
+
+.message-options {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.message-options button {
+    border: none;
+    border-radius: 50%;  /* 동그라미 */
+    width: 40px;
+    height: 40px;
+    background-color: #009879;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    text-align: center;
+}
+
+
+.full-bleed {
+    width: 100vw;          /* 화면 전체 가로 폭 */
+    height: 100%;         /* 화면 전체 세로 높이 */
+    object-fit: cover;     /* 넘치면 잘림 */
+    overflow: hidden;      /* 넘어가는 부분 숨김 */
+}
+
+
+.main-rec{
+    width: 100%;
+
+}
+
+.main-image-container {
+    position: relative; /* 자식의 절대 위치를 기준으로 설정 */
+    display: inline-block; /* 이미지 크기만큼 컨테이너 크기 */
+}
+
+.main-image {
+    display: block;
+    width: 100vw;    /* 가로 꽉 채우기 */
+    height: 800px;   /* 비율 유지 */
+    margin: 0;
+}
+
+.overlay-text {
+    width: 0%; /* 전체 너비 사용 */
+    position: absolute; /* 부모 요소를 기준으로 위치 지정 */
+    top: 50px;
+    right: 700px; /* 박스를 오른쪽 끝에 딱 붙입니다. */
+    box-sizing: border-box; /* 패딩을 너비에 포함시켜 여백을 만듭니다. */
+    margin: 0;
+    padding: 0;
+    color: white;
+    z-index: 10;
+    text-align: right;
+    white-space: nowrap; /* 줄바꿈 방지 */
+}
+
+
+.overlay-text .main-ti {
+    font-family: 'Paperozi4', sans-serif; /* 폰트 변경 */
+    font-size: 65px;                        /* 크기 */
+    margin: 0;
+}
+
+.overlay-text .main-su-ti{
+    font-family: 'Paperozi8', serif;  /* 다른 폰트 적용 */
+    font-size: 180px;
+    margin: 0;
+}
+
+.F1F8E9-bg {
+    margin: 150px 0 0 0; /* 위쪽에 간격 추가함 */
+    text-align: center;
+    background-color: #F1F8E9;
+    padding: 80px 20px;
+    width: 100vw; /* 가로 꽉 차게 */
+    height: 420px;
+}
+
+.buy-wrapper {
+    display: flex;
+    justify-content: center; /* 가로 중앙 */
+    align-items: center;     /* 세로 중앙 */
+    gap: 150px;               /* 텍스트와 이미지 간격 */
+    height: 350px;
+    align-content: center;
+}
+
+
+.buy-box {
+    display: inline-block;
+    background: #f5f5a0;
+    padding: 15px;
+    margin-top: 50px; /* 위쪽 여백으로 내림 */
+    border-radius: 5px;
+    width: 500px;
+    text-align: center;
+    color: black;
+    font-size: 25px;
+    gap: 40px;
+    /* top 제거 */
+}
+
+.wk-image {
+    position: relative;
+    z-index: 1;
+    width: 600px;       /* 너무 크지 않게 */
+    height: auto;        /* 자연스러운 비율 유지 */
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 15px; /* 약간 둥글게 */
+    margin-left: 20px;
+    top: 30px;
+
+}
+
+.main-container {
+    position: relative; /* circle이 이 컨테이너를 기준으로 위치하도록 함 */
+    display: inline-block; /* 컨테이너 크기를 이미지에 맞춤 */
+    margin: 0;      /* 위/아래 여백 제거 */
+    padding: 0;
+}
+
+.overlay-image {
+    /* 이미지는 문서 흐름에 남아있도록 position: absolute를 제거함 */
+
+    display: block; /* 이미지 하단의 기본 여백 제거 */
+    width: 100vw;
+    height: 600px;
+    margin: 0;
+
+}
+
+.sof-circle:hover {
+    transform:  scale(1.2);
+}
+
+
+.sof-circle {
+    position: absolute;       /* 이미지가 아닌 main-container를 기준으로 위치함 */
+    top: 30%;
+    left: 38%;
+    /*transform: !*translateX(-20%)*! rotate(-5deg); !* 기울이기 *!*/
+    transform-origin: center;  /* 회전 기준점: 중앙 */
+    width: 400px;
+    height: 200px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 55px;
+    z-index: 10;
+    font-family: 'Paperozi8', serif;  /* 다른 폰트 적용 */
+
+}
+
+.fff-bg {
+    background-color: #fff;
+    padding: 50px 20px;
+    clip-path: polygon(0 0, 100% 10%, 100% 100%, 0% 100%);
+    width: 100vw;
+    text-align: center;
+}
+
+.slider-container {
+    width: 100%;
+    overflow: hidden;
+}
+
+
+.product-track {
+    display: flex;
+    transition: transform 0.5s ease;
+    gap: 20px;            /* 아이템 간 간격 */
+}
+.product-be {
+    flex: 0 0 calc(25% - 10px); /* 한 줄에 4개, gap 반영 */
+    box-sizing: border-box;
+    padding: 10px;
+    text-align: center;
+}
+.product-be img {
+    width: 100%;
+    max-width: 200px;        /* 원하는 크기 제한 */
+    height: auto;
+    border-radius: 10px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.product-be img:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+.section.F1F8E9-bg {
+    margin: 0;           /* section 위쪽 여백 제거 */
+    padding: 40px 20px;  /* 내부 여백만 조정 */
+}
+
+.section {
+    margin: 0;          /* 위/아래 불필요한 여백 제거 */
+    padding: 40px 20px; /* 내부 여백만 조정 */
+}
+
+
+.product-ch { /* 초이스 아이템 */
+    flex: 0 0 25%;           /* 한 줄에 딱 4개 */
+    box-sizing: border-box;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;  /* 이미지 위, 텍스트 아래 */
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+}
+
+.product-ch img {
+    width: 100%;
+    max-width: 190px;        /* 원하는 크기 제한 */
+    height: auto;
+    border-radius: 10px;
+    gap: 10px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.product-ch img:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+
+.product-name {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.product-price {
+    margin-top: 5px;
+    font-weight: bold;
+}
+.custom-box {
+    display: flex;
+    align-items: center;        /* 세로 가운데 정렬 */
+    justify-content: center;    /* 가로 중앙 정렬 */
+    gap: 100px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fff;
+    max-width: 1000px;          /* 박스 최대 너비 */
+    margin: 0 auto;             /* 화면 중앙 */
+
+}
+
+.custom-box {
+    display: flex;
+    align-items: center;        /* 세로 가운데 정렬 */
+    justify-content: center;    /* 가로 중앙 정렬 */
+    gap: 100px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fff;
+    max-width: 1000px;          /* 박스 최대 너비 */
+    margin: 0 auto;             /* 화면 중앙 */
+
+}
+
+.custom-box-left img {
+    width: 400px;
+    max-width: 100%;            /* 화면보다 크면 자동 축소 */
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    margin-top: 50px; /* 이미지 아래로 살짝 이동 */
+}
+
+.custom-box-btn {
+    padding: 10px 20px;
+    background-color: orange;
+    color: white;
+    border: none;
+    border-radius: 10px;        /* 버튼 둥글게 */
+    /*  cursor: pointer;*/
+    transition: all 0.2s ease;
+}
+
+.custom-box-btn:hover {
+    background-color: #ffc965;
+    transform: translateY(-2px);
+}
+
+
+table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: separate;
+    border-spacing: 0 8px; /* 행 사이 간격 */
+}
+
+th {
+    background-color: #ffe6f0;
+    color: #444;
+    padding: 10px;
+    border-radius: 12px;
+}
+
+td {
+    background-color: #fff;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ffd6e7;
+    border-radius: 12px;
+}
+
+tr:hover td {
+    background-color: #fff5fa; /* 마우스 올리면 살짝 하이라이트 */
+}
+
+button {
+    background-color: #ffd6e7;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+h1 {
+    text-align: center;
+}
+
+.salary-container {
+    text-align: center;
+    padding: 20px;
+}
+
+.salary-table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: separate;
+    border-spacing: 0 10px; /* 행 간격 */
+}
+
+.salary-table th {
+    background-color: #ffe6f0;
+    color: #444;
+    padding: 10px;
+    border-radius: 12px;
+}
+
+.salary-table td {
+    background-color: #fff;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ffd6e7;
+    border-radius: 12px;
+}
+
+.salary-table tr:hover td {
+    background-color: #fff5fa;
+}
+
+.btn {
+    border: none;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    margin: 0 2px;
+    transition: 0.2s;
+}
+
+.btn.update {
+    background-color: #ffd6e7;
+}
+
+.btn.update:hover {
+    background-color: #ffd6e7;
+    color: white;
+}
+
+.btn.delete {
+    background-color: #ffd6e7;
+}
+
+.btn.delete:hover {
+    background-color: #ffd6e7;
+    color: white;
+}
+
+.btn.add {
+    background-color: #c1e1ff;
+}
+
+.btn.add:hover {
+    background-color: #ffd6e7;
+    color: white;
+}
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* 화면 전체 높이 */
+}
+
+.content {
+    margin-top: 60px; /* 메뉴바 높이만큼 여백 */
+}
+
+.divider {
+    height: 1px;
+    background-color: #009879; /* 연두/초록 원하는 색으로 바꿔도 됨 */
+    width: 100%;
+    margin-top: 0; /* 필요하면 간격 조정 */
+}
+
