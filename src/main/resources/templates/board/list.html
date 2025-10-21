@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+
+<head>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="board-container">
+        <div class="row mt-3">
+            <div class="col">
+
+                <h1>공지사항</h1>
+                <div class="card">
+
+                    <table class="table board-table">
+                        <thead>
+                        <tr>
+                            <th scope="col">번호</th>
+                            <th scope="col">제목</th>
+                            <th scope="col">작성자</th>
+                            <th scope="col">작성일</th>
+                            <th scope="col">조회 수</th>
+                        </tr>
+                        </thead>
+
+                        <tbody th:with="link = ${pageAdminRequestDTO.getLink()}"
+                               th:each="dto : ${responseDTO.dtoList}">
+                        <tr class="table-body">
+                            <td th:text="${dto.bno}"></td>
+                            <td>
+                                <a th:href="@{/board/read(bno=${dto.bno})}" style="text-decoration: none; color: inherit;">
+                                    <span th:if="${dto.notice}" style="color:#009879; font-weight:bold">[공지]</span>
+                                    <span th:text="${dto.title}"></span>
+                                </a>
+                            </td>
+                            <td th:text="${dto.writer}"></td>
+                            <td>[[${#temporals.format(dto.regDate, 'yyyy-MM-dd')}]]</td>
+                            <td th:text="${dto.viewCount}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="float-end">
+                        <ul class="pagination flex-wrap">
+                            <li class="page-item" th:classappend="${!responseDTO.prev} ? 'disabled' : ''">
+                                <a href="javascript:void(0)" class="page-link"
+                                   th:onclick="'movePage(' + (${responseDTO.page > 1 ? responseDTO.page - 1 : 1}) + ')'">이전</a>
+                            </li>
+
+                            <th:block th:each="i : ${#numbers.sequence(responseDTO.start, responseDTO.end)}">
+                                <li th:class="${responseDTO.page == i} ? 'page-item active' : 'page-item'">
+                                    <a href="javascript:void(0)" class="page-link" th:onclick="'movePage(' + ${i} + ')'" th:text="${i}"></a>
+                                </li>
+                            </th:block>
+
+                            <li class="page-item" th:classappend="${!responseDTO.next} ? 'disabled': ''">
+                                <a href="javascript:void(0)" class="page-link"
+                                   th:onclick="'movePage(' + (${responseDTO.page < responseDTO.end ? responseDTO.page + 1 : responseDTO.end}) + ')'">다음</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 💡 수정: href 제거, id 추가 -->
+                  <!--  <button type="button" class="btn-write" id="btnWrite">글쓰기</button>-->
+                    <!-- 수정: style="display:none;" 추가 - 기본적으로 버튼 숨김 -->
+                    <button type="button" class="btn-write" id="btnWrite" style="display:none;">글쓰기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 💡 추가: tokenManager.js 로드 -->
+<th:block layout:fragment="script">
+    <script th:src="@{/js/tokenManager.js}"></script>
+    <script th:inline="javascript">
+        console.log("스크립트 로딩...");
+
+        function movePage(pageNum) {
+            console.log("페이지 이동:", pageNum);
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('page', pageNum);
+            window.location.href = window.location.pathname + '?' + urlParams.toString();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const pageLinks = document.querySelectorAll('.page-link[data-num]');
+            pageLinks.forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageNum = this.getAttribute('data-num');
+                    if (pageNum) {
+                        movePage(pageNum);
+                    }
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("현재 페이지:", /*[[${responseDTO.page}]]*/);
+            console.log("전체 페이지:", /*[[${responseDTO.end}]]*/);
+        });
+
+        // 💡 추가: 글쓰기 버튼 권한 체크 및 표시 로직 변경
+        /*document.addEventListener('DOMContentLoaded', function() {
+            const btnWrite = document.getElementById("btnWrite");
+
+            if (btnWrite) {
+                btnWrite.addEventListener("click", async () => {
+                    const res = await tokenManager.fetchWithToken("/board/register/check");
+
+                    if (!res.ok) {
+                        if (res.status === 401) {
+                            alert("로그인이 필요합니다.");
+                            window.location.href = "/members/login";
+                        } else if (res.status === 403) {
+                            alert("권한이 없습니다.");
+                        }
+                        return;
+                    }
+
+                    // 💡 권한이 있으면 글쓰기 페이지로 이동
+                    window.location.href = "/board/register";
+                });
+            }
+        });*/
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const btnWrite = document.getElementById("btnWrite");
+
+            if (!btnWrite) return;
+
+            try {
+                // 권한 체크 API 호출
+                const res = await tokenManager.fetchWithToken("/board/register/check");
+
+                if (res.ok) {
+                    // 추가: 권한이 있으면 버튼 표시
+                    btnWrite.style.display = 'inline-block';
+
+                    // 추가: 클릭 이벤트 등록
+                    btnWrite.addEventListener("click", function() {
+                        window.location.href = "/board/register";
+                    });
+                } else if (res.status === 401) {
+                    // 수정: 로그인하지 않은 경우 버튼 숨김 (알림 제거)
+                    console.log("로그인 필요 - 글쓰기 버튼 숨김");
+                } else if (res.status === 403) {
+                    // 수정: 권한 없는 경우 버튼 숨김 (알림 제거)
+                    console.log("권한 없음 - 글쓰기 버튼 숨김");
+                }
+            } catch (err) {
+                // 추가: 에러 발생 시에도 버튼 숨김
+                console.log("권한 체크 실패 - 글쓰기 버튼 숨김", err);
+            }
+        });
+
+        function toggleLike(button) {
+            const bno = button.getAttribute('data-bno');
+            const heartIcon = button.querySelector('.heart-icon');
+            const countSpan = button.querySelector('.like-count');
+
+            fetch('/board/like/${bno}' + bno, {method: 'POST'})
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        countSpan.textContent = data.likeCount;
+                        heartIcon.textContent = data.liked ? '♥' : '♡';
+                    }
+                })
+                .catch(err => console.error(err));
+        }
+    </script>
+</th:block>
+
+</body>
+</html>

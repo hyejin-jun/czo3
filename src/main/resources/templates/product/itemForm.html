@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="itemForm-body">
+        <div class="form-container">
+            <div class="cool">
+                <h1>상품 등록</h1>
+                <div class="form-card">
+                    <form role="form" method="post" enctype="multipart/form-data" th:object="${itemFormDto}">
+                        <table class="form-table">
+                            <!-- 상품 상태 -->
+                            <tr>
+                                <td class="label">상품 상태:</td>
+                                <td class="input">
+                                    <select th:field="*{itemSellStatus}" class="custom-select">
+                                        <option value="SELL">판매중</option>
+                                        <option value="SOLD_OUT">품절</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- 상품명 -->
+                            <tr>
+                                <td class="label">상품명:</td>
+                                <td class="input">
+                                    <input type="text" th:field="*{itemNm}" class="clean-input" placeholder="상품명을 입력해주세요">
+                                </td>
+                            </tr>
+                            <!-- 원가 -->
+                            <tr>
+                                <td class="label">원가:</td>
+                                <td class="input">
+                                    <input type="number" th:field="*{cost}" class="clean-input" placeholder="상품의 원가를 입력해주세요">
+                                </td>
+                            </tr>
+                            <!-- 가격 -->
+                            <tr>
+                                <td class="label">가격:</td>
+                                <td class="input">
+                                    <input type="number" th:field="*{price}" class="clean-input" placeholder="상품의 가격을 입력해주세요">
+                                </td>
+                            </tr>
+                            <!-- 재고 -->
+                            <tr>
+                                <td class="label">재고:</td>
+                                <td class="input">
+                                    <input type="number" th:field="*{stockNumber}" class="clean-input" placeholder="상품의 재고를 입력해주세요">
+                                </td>
+                            </tr>
+                            <!-- 상세 내용 -->
+                            <tr>
+                                <td class="label">상품 상세 내용:</td>
+                                <td class="input">
+                                    <textarea th:field="*{itemDetail}" class="clean-input" placeholder="상세 설명을 입력해주세요"></textarea>
+                                </td>
+                            </tr>
+                            <!-- 이미지 -->
+                            <tr>
+                                <td class="label">상품 이미지:</td>
+                                <td class="input">
+                                    <input type="hidden" th:field="*{id}">
+                                    <input type="hidden" th:field="*{tempKey}" id="tempKey">
+
+                                    <input type="file" id="productInput" multiple data-type="product"
+                                           th:data-product-id="${itemFormDto.id}">
+
+                                    <div th:if="${#strings.isEmpty(itemFormDto.id)}">
+                                        <button type="button" class="btn-submit uploadBtn"
+                                                data-type="product" data-product-id="temp">
+                                            상품 사진 등록
+                                        </button>
+                                    </div>
+
+                                    <div th:unless="${#strings.isEmpty(itemFormDto.id)}">
+                                        <button type="button" class="btn-submit uploadBtn"
+                                                data-type="product" th:data-product-id="${itemFormDto.id}">
+                                            상품 사진 등록
+                                        </button>
+                                        <div th:each="fileName : ${itemFormDto.fileNames}">
+                                            <input type="hidden" name="fileNames" th:value="${fileName}">
+                                        </div>
+                                        <input type="hidden" name="repImgUrl" th:value="${itemFormDto.getRepImgUrl()}">
+                                    </div>
+
+                                    <div th:each="fileName : ${itemFormDto.fileNames}">
+                                        <input type="hidden" class="existing-image" th:value="${fileName}">
+                                    </div>
+
+                                    <div id="preview"></div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- 버튼 영역 -->
+                        <div class="btn-wrapper">
+                            <!-- 신규 저장 -->
+                            <div th:if="${#strings.isEmpty(itemFormDto.id)}">
+                                <button th:formaction="@{/admin/item/new}" type="submit" class="btn-write">저장하기</button>
+                            </div>
+                            <!-- 수정/삭제 -->
+                            <div th:unless="${#strings.isEmpty(itemFormDto.id)}">
+                                <button th:formaction="@{'/admin/item/' + ${itemFormDto.id}}" type="submit"
+                                        class="btn-write">수정하기</button>
+                                <button type="button" class="btn-write" onclick="deleteItem()">삭제하기</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ CSRF -->
+<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+<!-- ✅ 스크립트 -->
+<th:block layout:fragment="script">
+    <script th:src="@{/js/tokenManager.js}"></script>
+    <script type="module" th:src="@{/js/uploadImages.js}"></script>
+
+    <script th:inline="javascript">
+        // 관리자 권한 체크
+        async function checkAdmin(itemId) {
+            const checkUrl = itemId ? `/admin/item/${itemId}/check` : '/admin/item/new/check';
+            const res = await tokenManager.fetchWithToken(checkUrl);
+            return res.ok;
+        }
+
+        // 삭제 요청
+        async function deleteItemRequest(itemId) {
+            return await tokenManager.fetchWithToken('/admin/items', {
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'itemIds=' + itemId
+            });
+        }
+
+        // 삭제 실행
+        async function deleteItem() {
+            const itemId = /*[[${itemFormDto.id}]]*/ null;
+            if (!itemId) {
+                alert("상품 ID가 없습니다.");
+                return;
+            }
+            if (!confirm("정말 삭제하시겠습니까?")) return;
+
+            const hasAuth = await checkAdmin(itemId);
+            if (!hasAuth) {
+                alert("관리자 권한이 없습니다.");
+                return;
+            }
+
+            const res = await deleteItemRequest(itemId);
+            const msg = await res.text();
+            if (res.ok) {
+                alert(msg);
+                window.location.href = "/admin/items"; // 삭제 후 이동
+            } else {
+                alert("삭제 실패: " + msg);
+            }
+
+        }
+
+    </script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+
+<!-- 페이지별 컨텐츠 -->
+<div layout:fragment="content">
+    <div class="card align-self-center" style="max-width:400px; margin:50px auto;">
+        <div class="card-body">
+            <div class="loginPage">LOGIN PAGE</div>
+            <br><br>
+
+            <!-- ID -->
+            <div class="input-group mb-3">
+                <span class="input-group-text">아이디</span>
+                <input id="mid" placeholder="Username" type="text" class="form-control" required>
+            </div><br>
+
+            <!-- Password -->
+            <div class="input-group mb-3">
+                <span class="input-group-text">패스워드</span>
+                <input id="mpassword" placeholder="Password" type="password" class="form-control" required>
+            </div><br>
+
+            <!-- Remember Me -->
+            <div class="form-check mb-3">
+                <input type="checkbox" id="rememberMe" class="form-check-input">
+                <label for="rememberMe" class="form-check-label">자동 로그인 (1 달)</label>
+            </div><br>
+
+            <!-- Links -->
+            <div style="margin-bottom:10px;">
+                <a href="/members/findId" class="text-success">아이디 찾기</a> |
+                <a href="/members/findPw" class="text-success">비밀번호 찾기</a> |
+                <a href="/members/join" class="text-success">회원가입</a>
+            </div>
+
+            <!-- Login Button -->
+            <div>
+            <div>
+                <button onclick="login()" class="btn-login">LOGIN</button>
+
+
+            <!-- Kakao Login Button -->
+
+                <button id="kakaoLoginBtn" class="kakaologin">카카오 로그인</button>
+            </div>
+                </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 페이지별 JS -->
+<th:block layout:fragment="script">
+    <script>
+        async function login() {
+            const mid = document.getElementById("mid").value;
+            const mpassword = document.getElementById("mpassword").value;
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include', // <- 쿠키 수신 허용
+                    body: JSON.stringify({ mid, mpassword }) // 여기서 JSON 키를 mpassword로
+                });
+
+                const data = await response.json();
+                console.log("Login response:", data);
+                //document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+
+                if (data.success) {
+                    console.log("로그인 성공! Response:", data);
+                    const accessToken = data.data.accessToken;
+                    window.tokenManager.setAccessToken(accessToken);
+                    // 로그인 성공 후 main.html로 이동
+                    window.location.href = '/';
+
+                } else {
+                    alert("Login 실패: " + data.message);
+                }
+
+            } catch (err) {
+                console.error("Login error:", err);
+                alert("Login 요청 실패");
+            }
+        }
+
+        document.getElementById("kakaoLoginBtn").addEventListener("click", () => {
+            const url = "/oauth2/authorization/kakao"; // 카카오 로그인 시작 URL
+            const width = 500;
+            const height = 700;
+            const left = (window.innerWidth - width) / 2;
+            const top = (window.innerHeight - height) / 2;
+
+            const popup = window.open(
+                url,
+                'kakaoLogin',
+                `width=${width},height=${height},top=${top},left=${left},scrollbars=yes`
+            );
+
+            if (!popup) {
+                alert("팝업이 차단되었습니다. 브라우저 설정을 확인하세요.");
+            }
+        });
+    </script>
+</th:block>
+
+<style>
+    /* 카드 영역 */
+    .card {
+        border: none;
+        box-shadow: none;
+    }
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .loginPage {
+        font-size: 25px;
+        font-weight: bold;
+        color: #009879;
+        margin-bottom: 20px;
+    }
+    .form-control {
+        border: 2px dashed #009879;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 14px;
+        text-align: left;
+        width: 100%;
+    }
+    .btn-login {
+        background-color: #009879;
+        color: white;
+        font-weight: 600;
+        border-radius: 4px;
+        padding: 5px 16px;
+        border: none;
+        margin-right: 5px;
+    }
+    .kakaologin {
+        background-color: #FFD94D;
+        color: white;
+        font-weight: 600;
+        border-radius: 4px;
+        padding: 5px 16px;
+        border: none;
+    }
+    .text-success {
+        color: #009879;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .text-success:hover {
+        text-decoration: underline;
+        color: #007d63;
+    }
+</style>

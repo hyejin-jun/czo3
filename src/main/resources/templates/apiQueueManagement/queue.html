@@ -1,0 +1,51 @@
+<div class="queue-container">
+    <h2>상품 입장 대기열</h2>
+    <div id="queueStatus" class="queue-status">대기열 참여 중...</div>
+    <div id="queueNumber" class="queue-number"></div>
+</div>
+
+<style>
+    .queue-container {
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 20px;
+        text-align: center;
+        border: 2px solid #4CAF50;
+        border-radius: 15px;
+        background-color: #f9f9f9;
+        box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
+        font-family: 'Arial', sans-serif;
+    }
+
+    .queue-container h2 {
+        font-size: 28px;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .queue-status {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #555;
+    }
+
+    .queue-number {
+        font-size: 48px;
+        font-weight: bold;
+        color: #FF5722;
+    }
+
+    .queue-go {
+        color: #4CAF50;
+        animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/js/simulateQueue.js"></script>

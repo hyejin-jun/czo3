@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* 모달 기본 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+        .modal-dialog {
+            max-width: 600px;
+            margin: 10% auto;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .btn-close {
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div class="board-container">
+        <h2 class="mb-4">주문/결제</h2>
+
+        <!-- 주문 상품 목록 -->
+        <table class="table table-bordered align-middle text-center">
+            <thead class="table-light">
+            <tr>
+                <th>상품명</th>
+                <th>수량</th>
+                <th>가격</th>
+                <th>합계</th>
+            </tr>
+            </thead>
+            <tbody id="order-items">
+            <!-- JS로 동적 생성 -->
+            </tbody>
+        </table>
+
+        <!-- 주문/결제 form -->
+        <form id="order-form" th:action="@{/cart/order/complete}" method="post">
+            <div class="cont my-5">
+                <div class="card-item-row">
+
+                    <!-- 왼쪽 카드: 배송 정보 -->
+                    <div class="card card-item">
+                        <div class="mb-3">
+                            <h3 style="display: inline;">배송지 입력</h3>
+                            <button type="button" class="btn btn-del ms-3" id="loadMemberInfo" style="font-size: 12px; padding: 4px 8px;">배송지 선택</button>
+                        </div><br>
+
+                        <div class="right-mod text-end">
+                            <div class="mb-3">
+                                <label for="recipientName" class="form-label">수령인 이름</label>
+                                <input type="text" class="form-control" id="recipientName" name="recipientName" required>
+                            </div><br>
+
+                            <div class="mb-3">
+                                <label for="address" class="form-label">배송지 주소</label>
+                                <input type="text" class="form-control" id="address" name="address" required>
+                            </div><br>
+
+                            <div class="mb-3">
+                                <label for="detailAddress" class="form-label">상세 주소</label>
+                                <input type="text" class="form-control" id="detailAddress" name="detailAddress" required>
+                            </div><br>
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">연락처</label>
+                                <input type="text" class="form-control" id="phone" name="phone" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 가운데 카드: 결제 방법 -->
+                    <div class="card card-item">
+                        <h3>결제 방법</h3><br><br>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="card" value="CARD" checked>
+                            <label class="form-label" for="card">💳 카드 결제</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="bank" value="BANK">
+                            <label class="form-label" for="bank">🏦 계좌이체</label>
+                        </div>
+                        <div class="form-check mb-0">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="kakao" value="KAKAO">
+                            <label class="form-label" for="kakao">📱 카카오페이</label>
+                        </div>
+                    </div>
+
+                    <!-- 오른쪽 카드: 총 결제 금액 + 버튼 -->
+                    <div class="card card-item d-flex flex-column justify-content-between">
+                        <div class="total-price mb-3">
+                            <h3>총 결제 금액: <span id="total-price" style="font-size: 20px">0</span> 원</h3>
+                            <hr class="custom-hr">
+                            <h4 class="text-center">상품 금액: <span id="product-price">0</span> 원</h4>
+                            <h4 class="text-center">배송비: <span id="shipping-fee">0</span> 원</h4>
+                        </div><br>
+                        <button type="submit" class="btn btn-order">결제하기</button>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- 배송지 선택 모달 -->
+    <div class="modal" id="addressModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addressModalLabel">배송지 선택</h5>
+                    <button type="button" class="btn-close" id="closeModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <h4>기본 회원정보</h4>
+                        <div id="memberInfoSection" class="border p-3 mb-3 rounded">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="selectedAddress" id="memberAddress" value="member">
+                                <label class="form-check-label" for="memberAddress">
+                                    <div id="memberAddressInfo">
+                                        <strong id="memberName"></strong><br>
+                                        <span id="memberFullAddress"></span><br>
+                                        <span id="memberPhone"></span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <h4>이전 배송지 목록</h4>
+                        <div id="deliveryListSection" class="border p-3 rounded" style="max-height: 300px; overflow-y: auto;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-del" id="selectAddressBtn">선택</button>
+                    <button type="button" class="btn btn-del" id="cancelAddressBtn">취소</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const orderItemsTbody = document.getElementById("order-items");
+            const orderForm = document.getElementById("order-form");
+
+            // ================== 장바구니 정보 로딩 ==================
+            try {
+                const res = await window.tokenManager.fetchWithToken("/cart/order/api/order", {method:'GET'});
+                if(!res.ok) throw new Error('장바구니 정보 불러오기 실패');
+
+                const data = await res.json();
+                let totalPrice = 0;
+                orderItemsTbody.innerHTML = '';
+
+                // 기존 hidden input 삭제
+                orderForm.querySelectorAll('.cart-item-hidden').forEach(el => el.remove());
+
+                data.cartItems.forEach((item,index) => {
+                    const itemTotal = item.price * item.count;
+                    totalPrice += itemTotal;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${item.itemNm}</td>
+                        <td>${item.count}</td>
+                        <td>${item.price.toLocaleString()}</td>
+                        <td>${itemTotal.toLocaleString()}</td>
+                    `;
+                    orderItemsTbody.appendChild(tr);
+
+                    // hidden input으로 Form에 추가
+                    ['itemNm','count','price'].forEach(field => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = `cartItems[${index}].${field}`;
+                        input.value = item[field];
+                        input.classList.add('cart-item-hidden');
+                        orderForm.appendChild(input);
+                    });
+                });
+
+                const shippingFee = totalPrice >= 50000 ? 0 : 3000;
+                const finalTotal = totalPrice + shippingFee;
+
+                document.getElementById('product-price').innerText = totalPrice.toLocaleString();
+                document.getElementById('shipping-fee').innerText = shippingFee.toLocaleString();
+                document.getElementById('total-price').innerText = finalTotal.toLocaleString();
+            } catch(err) {
+                console.error(err);
+                alert('장바구니 정보를 불러오는데 실패했습니다.');
+            }
+
+            // ================== 모달 관련 ==================
+            const addressModal = document.getElementById('addressModal');
+            const loadMemberInfoBtn = document.getElementById('loadMemberInfo');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelAddressBtn = document.getElementById('cancelAddressBtn');
+            const selectAddressBtn = document.getElementById('selectAddressBtn');
+
+            loadMemberInfoBtn.addEventListener('click', async () => {
+                try {
+                    const [memberRes, deliveryRes] = await Promise.all([
+                        window.tokenManager.fetchWithToken('/cart/order/member-info',{method:'GET'}),
+                        window.tokenManager.fetchWithToken('/cart/order/delivery-list',{method:'GET'})
+                    ]);
+                    if(!memberRes.ok || !deliveryRes.ok) throw new Error('배송지 정보 불러오기 실패');
+
+                    const memberData = await memberRes.json();
+                    const deliveryData = await deliveryRes.json();
+
+                    document.getElementById('memberName').textContent = memberData.name || '';
+                    document.getElementById('memberFullAddress').textContent = `${memberData.address || ''} ${memberData.detailAddress || ''}`.trim();
+                    document.getElementById('memberPhone').textContent = memberData.phoneNumber || '';
+
+                    const deliveryListSection = document.getElementById('deliveryListSection');
+                    deliveryListSection.innerHTML = '';
+                    if(deliveryData.length===0){
+                        deliveryListSection.innerHTML = '<p class="text-muted">이전 배송지 정보가 없습니다.</p>';
+                    } else {
+                        deliveryData.forEach(delivery=>{
+                            const div = document.createElement('div');
+                            div.className = 'form-check mb-2';
+                            div.innerHTML = `
+                                <input class="form-check-input" type="radio" name="selectedAddress" id="delivery_${delivery.id}" value="delivery_${delivery.id}">
+                                <label class="form-check-label" for="delivery_${delivery.id}">
+                                    <strong>${delivery.receiverName}</strong><br>
+                                    ${delivery.address} ${delivery.detailAddress}<br>
+                                    ${delivery.receiverPhone}
+                                </label>
+                            `;
+                            deliveryListSection.appendChild(div);
+                        });
+                    }
+
+                    addressModal.style.display = 'block';
+                } catch(err){ console.error(err); alert('배송지 정보를 불러오는데 실패했습니다.'); }
+            });
+
+            const closeModal = ()=>{ addressModal.style.display='none'; };
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelAddressBtn.addEventListener('click', closeModal);
+            window.addEventListener('click', (e)=>{if(e.target===addressModal) closeModal();});
+
+            selectAddressBtn.addEventListener('click', async ()=>{
+                const selectedRadio = document.querySelector('input[name="selectedAddress"]:checked');
+                if(!selectedRadio){ alert('배송지를 선택해주세요.'); return; }
+
+                // 기존 isExistingAddress hidden input 제거
+                const existingAddressInput = orderForm.querySelector('input[name="isExistingAddress"]');
+                if (existingAddressInput) {
+                    existingAddressInput.remove();
+                }
+
+                // 기존 주소 사용 플래그 추가
+                const isExistingAddressInput = document.createElement('input');
+                isExistingAddressInput.type = 'hidden';
+                isExistingAddressInput.name = 'isExistingAddress';
+                isExistingAddressInput.value = 'true'; // 모달에서 선택한 것은 모두 기존 주소
+                orderForm.appendChild(isExistingAddressInput);
+
+                if(selectedRadio.value==='member'){
+                    const memberName = document.getElementById('memberName').textContent;
+                    const memberPhone = document.getElementById('memberPhone').textContent;
+                    const fullAddress = document.getElementById('memberFullAddress').textContent.split(' ');
+
+                    document.getElementById('recipientName').value = memberName;
+                    document.getElementById('phone').value = memberPhone;
+
+                    if(fullAddress.length>1){
+                        const detailAddr = fullAddress.pop();
+                        const baseAddr = fullAddress.join(' ');
+                        document.getElementById('address').value = baseAddr;
+                        document.getElementById('detailAddress').value = detailAddr;
+                    } else {
+                        document.getElementById('address').value = fullAddress[0] || '';
+                        document.getElementById('detailAddress').value = '';
+                    }
+                } else {
+                    const deliveryId = selectedRadio.value.replace('delivery_','');
+                    try{
+                        const res = await window.tokenManager.fetchWithToken(`/cart/order/delivery/${deliveryId}`,{method:'GET'});
+                        if(!res.ok) throw new Error('배송지 정보 불러오기 실패');
+                        const deliveryData = await res.json();
+
+                        document.getElementById('recipientName').value = deliveryData.receiverName || '';
+                        document.getElementById('address').value = deliveryData.address || '';
+                        document.getElementById('detailAddress').value = deliveryData.detailAddress || '';
+                        document.getElementById('phone').value = deliveryData.receiverPhone || '';
+                    }catch(err){ console.error(err); alert('배송지 정보를 불러오는데 실패했습니다.'); return; }
+                }
+
+                closeModal();
+                alert('배송지 정보를 불러왔습니다.');
+            });
+
+            // ================== 주소 입력 필드 변경 감지 ==================
+            // 사용자가 주소를 직접 수정했을 때 기존 주소 플래그 제거
+            ['recipientName', 'address', 'detailAddress', 'phone'].forEach(fieldId => {
+                document.getElementById(fieldId).addEventListener('input', () => {
+                    const existingAddressInput = orderForm.querySelector('input[name="isExistingAddress"]');
+                    if (existingAddressInput) {
+                        existingAddressInput.remove();
+                        console.log('주소 필드가 수정되어 기존 주소 플래그 제거됨');
+                    }
+                });
+            });
+
+            // ================== 폼 제출을 AJAX로 변경 ==================
+            orderForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); // 기본 폼 제출 방지
+
+                try {
+                    console.log('주문 처리 시작...');
+
+                    // 폼 데이터를 FormData로 수집 (기존 백엔드 @RequestParam과 호환)
+                    const formData = new FormData(orderForm);
+
+                    console.log('FormData 내용 확인:');
+                    for (let [key, value] of formData.entries()) {
+                        console.log(key, value);
+                    }
+
+                    // 결제 버튼 비활성화 (중복 제출 방지)
+                    const submitButton = orderForm.querySelector('button[type="submit"]');
+                    const originalButtonText = submitButton.textContent;
+                    submitButton.disabled = true;
+                    submitButton.textContent = '처리중...';
+
+                    // tokenManager로 토큰 포함해서 전송
+                    const response = await window.tokenManager.fetchWithToken('/cart/order/complete', {
+                        method: 'POST',
+                        body: formData // FormData 그대로 전송 (컨트롤러의 @RequestParam과 호환)
+                    });
+
+                    console.log('응답 상태:', response.status);
+
+                    if (!response.ok) {
+                        throw new Error(`주문 처리 실패: ${response.status} ${response.statusText}`);
+                    }
+
+                    // 응답이 HTML 페이지 (order/orderComplete.html)
+                    const htmlContent = await response.text();
+
+                    // 현재 페이지를 주문 완료 페이지로 교체
+                    document.open();
+                    document.write(htmlContent);
+                    document.close();
+
+                    // 브라우저 히스토리 업데이트 (선택사항)
+                    window.history.pushState({}, '주문 완료', '/cart/order/complete');
+
+                } catch (error) {
+                    console.error('주문 처리 중 오류:', error);
+                    alert(`주문 처리 중 오류가 발생했습니다: ${error.message}`);
+
+                    // 에러 발생시 버튼 원상복구
+                    const submitButton = orderForm.querySelector('button[type="submit"]');
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalButtonText;
+                }
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

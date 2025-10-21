@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+
+
+<body>
+<div layout:fragment="content">
+
+  <div class="category mb-3 center-content">
+    <br><br>
+    <h2>바디케어</h2>
+    <hr>
+    <nav class="item-category-nav">
+      <a href="#">로션바</a> |
+      <a href="#">핸드케어바</a> |
+      <a href="#">풋케어바</a> |
+      <a href="#">립밤</a> |
+      <a href="#">데오드란트바</a> |
+      <a href="#">마사지바</a> |
+      <a href="#">선케어</a>
+    </nav>
+  </div>
+
+
+  <div class="content-item">
+
+  <div class="board-container">
+    <!-- 검색 & 정렬 -->
+    <form th:action="@{/products}" method="get" class="form-inline mb-4" id="searchForm">
+      <input type="hidden" name="searchQuery" th:value="${itemSearchDto?.searchQuery}">
+      <select name="sortBy" id="sortBy" class="form-control">
+        <option value="">최신순</option>
+        <option value="priceAsc" th:selected="${itemSearchDto?.sortBy == 'priceAsc'}">낮은 가격순</option>
+        <option value="priceDesc" th:selected="${itemSearchDto?.sortBy == 'priceDesc'}">높은 가격순</option>
+        <option value="likesDesc" th:selected="${itemSearchDto?.sortBy == 'likesDesc'}">좋아요 많은순</option>
+        <option value="viewsDesc" th:selected="${itemSearchDto?.sortBy == 'viewsDesc'}">조회수 높은순</option>
+        <option value="viewsAsc" th:selected="${itemSearchDto?.sortBy == 'viewsAsc'}">조회수 낮은순</option>
+      </select>
+    </form>
+
+    <!-- 검색 결과 타이틀 -->
+    <input type="hidden" name="searchQuery" th:value="${itemSearchDto?.searchQuery ?: ''}">
+    <div th:if="${itemSearchDto?.searchQuery != null and not #strings.isEmpty(itemSearchDto.searchQuery)}" class="board-container">
+      <p class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery} + ' 검색 결과'"></p>
+    </div>
+</div>
+    <br><br>
+    <h1>상품 리스트</h1>
+    <br><br>
+
+    <!-- 상품 카드 3x3 고정 배열 -->
+    <div class="a-card-container my-4">
+      <th:block th:each="item, status : ${items.getContent()}">
+        <div class="a-card">
+       <!--   <a href="#" th:onclick="'enterQueue(' + ${item.id} + '); return false;'">
+            <img th:src="${item.imgUrl}" th:alt="${item.itemNm}">
+            <div class="a-card-body">
+              <h4 class="a-card-title">[[${item.itemNm}]]</h4>
+              <p class="a-card-text">[[${item.itemDetail}]]</p>
+              <h3 class="a-text-danger fw-bold">[[${item.price}]]원</h3>-->
+          <a th:href="@{/item/{id}(id=${item.id})}">
+            <img th:src="${item.imgUrl}" th:alt="${item.itemNm}">
+            <div class="a-card-body">
+              <h4 class="a-card-title">[[${item.itemNm}]]</h4>
+              <p class="a-card-text">[[${item.itemDetail}]]</p>
+              <h3 class="a-text-danger fw-bold">[[${item.price}]]원</h3>
+            </div>
+          </a>
+        </div>
+      </th:block>
+    </div>
+
+
+    <!-- 페이징 -->
+
+    <div class="paging-wrapper mt-4"
+         th:with="start=${(items.number/maxPage)*maxPage + 1},
+              end=(${(items.totalPages == 0) ? 1 : (start + (maxPage - 1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)}),
+              searchQuery=${itemSearchDto?.searchQuery ?: ''},
+              sortBy=${itemSearchDto?.sortBy ?: ''}">
+
+      <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${items.first} ? 'disabled' : ''">
+          <a th:href="@{/products(searchQuery=${searchQuery}, sortBy=${sortBy}, page=${items.number - 1})}"
+             class="page-link"><span aria-hidden='true'> < </span></a>
+        </li>
+
+        <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}"
+            th:classappend="${items.number eq page-1} ? 'active' : ''">
+          <a th:href="@{/products(searchQuery=${searchQuery}, sortBy=${sortBy}, page=${page - 1})}"
+             th:inline="text" class="page-link">[[${page}]]</a>
+        </li>
+
+        <li class="page-item" th:classappend="${items.last} ? 'disabled' : ''">
+          <a th:href="@{/products(searchQuery=${searchQuery}, sortBy=${sortBy}, page=${items.number + 1})}"
+             class="page-link"><span aria-hidden='true'> > </span></a>
+        </li>
+      </ul>
+    </div>
+
+</div>
+</div>
+</div>
+
+
+
+<th:block layout:fragment="script">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script th:inline="javascript">
+  /* 💡 수정/삭제: 상품 상세 페이지로 직접 이동하도록 위에서 링크를 수정했으므로, 이 함수는 필요 없거나 `/queue` 기능을 위해서만 남겨둡니다. 여기서는 주석 처리합니다. */
+  /*
+  function enterQueue(itemId) {
+    window.location.href = '/queue?itemId=' + itemId;
+  }
+  */
+
+  $(document).ready(function() {
+    $('#sortBy').on('change', function() {
+      $('#searchForm').submit();
+    });
+  });
+</script>
+</th:block>
+
+</body>
+</html>

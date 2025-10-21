@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>아이디 찾기</title>
+</head>
+
+
+<body>
+<div class="id-find">
+<div class="card-body">
+    <div layout:fragment="content">
+
+        <h1>아이디 찾기</h1>
+        <br><br><br>
+
+        <!-- 메시지 출력 -->
+        <div id="message"></div>
+
+        <!-- 아이디 찾기 폼 -->
+        <form id="findIdForm">
+            <input type="text" id="mname" class="form-control" placeholder="이름" required>
+            <input type="text" id="mphoneNumber" class="form-control" placeholder="휴대폰번호" required>
+            <button type="submit" class="btn-submit">아이디 찾기</button>
+        </form>
+
+        <!-- 결과 출력 -->
+        <div id="result" style="display:none; margin-top:20px;">
+            <p>회원님의 아이디는 <strong id="foundId"></strong> 입니다.</p>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+<script>
+    document.getElementById("findIdForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const data = {
+            mname: document.getElementById("mname").value,
+            mphoneNumber: document.getElementById("mphoneNumber").value
+        };
+
+        try {
+            const response = await fetch("/api/members/find-id", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            const messageDiv = document.getElementById("message");
+            const resultDiv = document.getElementById("result");
+            const foundId = document.getElementById("foundId");
+
+            if (result.success) {
+                messageDiv.textContent = "아이디 찾기에 성공했습니다.";
+                messageDiv.className = "success";
+
+                foundId.textContent = result.data.mid;
+                resultDiv.style.display = "block";
+            } else {
+                messageDiv.textContent = "실패: " + result.message;
+                messageDiv.className = "error";
+
+                resultDiv.style.display = "none";
+            }
+        } catch (err) {
+            console.error("에러 발생:", err);
+            document.getElementById("message").textContent = "서버 오류 발생";
+        }
+    });
+</script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,129 @@
+package org.mbc.czo.function.apiChatRoom.kafka.consumer;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.mbc.czo.function.apiChatRoom.RedisChatMessagePublisher;
+import org.mbc.czo.function.apiChatRoom.domain.ChatMessage;
+import org.mbc.czo.function.apiChatRoom.domain.ChatRoom;
+import org.mbc.czo.function.apiChatRoom.dto.chatImageDBUpdateEvent.ChatImageDBUpdateEvent;
+import org.mbc.czo.function.apiChatRoom.dto.chatMessageDBUpdateEvent.ChatMessageDBUpdateEvent;
+import org.mbc.czo.function.apiChatRoom.dto.chatMessagePayload.ChatMessagePayloadReq;
+import org.mbc.czo.function.apiChatRoom.repository.ChatMessageJpaRepository;
+import org.mbc.czo.function.apiChatRoom.repository.ChatRoomJpaRepository;
+import org.mbc.czo.function.apiMember.domain.Member;
+import org.mbc.czo.function.apiMember.repository.MemberJpaRepository;
+import org.mbc.czo.function.apiUploadImage.domain.ChatRoomImages;
+import org.mbc.czo.function.apiUploadImage.repository.ChatRoomImageJpaRepository;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+
+@Log4j2
+@Service
+@RequiredArgsConstructor
+public class ChatImageDBUpdateConsumer {
+
+    private final KafkaTemplate<String, ChatImageDBUpdateEvent> chatImageDBUpdateKafkaTemplate;
+
+    private static final int MAX_KAFKA_EVENT_RETRIES = 10;
+
+    private final ChatMessageJpaRepository chatMessageJpaRepository;
+    private final RedisChatMessagePublisher redisChatMessagePublisher; // 서버 브로드캐스트용, 필요 시 사용
+    private final ChatRoomJpaRepository chatRoomJpaRepository;
+    private final MemberJpaRepository memberJpaRepository;
+
+    private final ChatRoomImageJpaRepository chatRoomImageJpaRepository;
+
+    @KafkaListener(
+            topics = "chatImage-DBUpdate-events",
+            containerFactory = "chatImageDBUpdateListenerFactory",
+            groupId = "chatImageDBUpdate"
+    )
+    public void consume(ChatImageDBUpdateEvent event) {
+        try {
+            log.info("ChatImageDBUpdateEvent: {}", event);
+            ChatRoom room = chatRoomJpaRepository.findById(event.getChatRoomId())
+                    .orElseThrow(() -> new IllegalArgumentException("채팅방 없음"));
+
+            Member sender = memberJpaRepository.findById(event.getSenderId())
+                    .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
+
+            ChatMessage newMessage =
+                    ChatMessage.createChatMessage(room, sender, event.getContent(), event.getStatus());
+
+            // 이미지 객체 생성
+            ChatRoomImages chatRoomImages = new ChatRoomImages(
+                    event.getOriginalName(),
+                    event.getStoredName(),
+                    event.getRelativePath(),
+                    newMessage
+            );
+
+            // 연관관계 설정
+            newMessage.getImages().add(chatRoomImages);
+
+            // 한 번만 save 하면 message + image 둘 다 저장됨 (cascade = CascadeType.ALL)
+            chatMessageJpaRepository.save(newMessage);
+            log.info("consume. DB 저장 완료: {}", newMessage);
+
+            log.info("이미지 URL 리스트: {}",  event.getRelativePath());
+
+            // Redis에 발행 -> 구독 중인 모든 서버에 전달됨
+          /*  redisChatMessagePublisher.publish(
+                    new ChatMessagePayloadReq(
+                            event.getStatus(),
+                            event.getChatRoomId(),
+                            event.getSenderId(),
+                            event.getContent(),
+                            event.getRelativePath(),
+                            newMessage.getCreatedAt()));*/
+
+        } catch (Exception e) {
+            log.error("DB 저장 실패, DLQ로 이동: {}", event, e);
+
+            // 재시도 횟수 체크
+            if (event.getRetryCount() < MAX_KAFKA_EVENT_RETRIES) {
+
+                event.setRetryCount(event.getRetryCount() + 1);
+                sendToDLQ(event);
+            } else {
+                log.error("재시도 최대치 도달, 관리자 확인 필요, 이벤트: {}", event);
+            }
+        }
+    }
+
+
+    @KafkaListener(
+            topics = "chatImage-DBUpdate-events-dlq",
+            containerFactory = "chatImageDBUpdateDLQListenerFactory",
+            groupId = "chatImageDBUpdate-dlq"
+    )
+    public void consumeDLQ(ChatImageDBUpdateEvent event) {
+
+        // 재시도 횟수 증가
+        event.setRetryCount(event.getRetryCount() + 1);
+
+        // 최대 재시도 체크
+        if (event.getRetryCount() > MAX_KAFKA_EVENT_RETRIES) {
+            log.error("재시도 최대치 도달, 관리자 확인 필요, 이벤트: {}", event);
+            return;
+        }
+
+        try {
+            String topic = "chatMessage-DBUpdate-events";
+            chatImageDBUpdateKafkaTemplate.send(
+                    topic, String.valueOf(event.getChatRoomId()), event);
+            log.info("재처리 성공, 이벤트: {}", event);
+        } catch (Exception e) {
+            log.error("재처리 실패, 다시 DLQ에 남김", e);
+
+            sendToDLQ(event);
+        }
+    }
+
+    private void sendToDLQ(ChatImageDBUpdateEvent event) {
+        String topic = "chatMessage-DBUpdate-events-dlq";
+        chatImageDBUpdateKafkaTemplate.send(
+                topic, String.valueOf(event.getChatRoomId()), event);
+    }
+}

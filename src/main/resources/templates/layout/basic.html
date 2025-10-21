@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Re:Life</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+<div class="wrapper">
+    <div class="header-container">
+        <header class="header">
+            <div class="logo">
+                <a href="/" class="menu-item">
+                    <img src="/images/benner.png" alt="Re:Life Logo">
+                </a>
+            </div>
+
+            <div class="menu-bar">
+
+                <a href="/" class="menu-item">HOME</a>
+
+                <div class="menu-item" onclick="toggleDropdown(this)">
+                    NOTICE
+                    <div class="dropdown">
+                        <a href="/board/list">공지사항</a>
+                        <a href="/board/userList">문의사항</a>
+                        <a href="#">이벤트</a>
+                    </div>
+                </div>
+
+                <div class="menu-item" onclick="toggleDropdown(this)">
+                    SHOP
+                    <div class="dropdown">
+                        <!-- 💡 관리자 전용 메뉴 (기본 숨김) -->
+                        <a href="/admin/item/new" id="menuItemForm" style="display:none;">아이템폼</a>
+                        <a href="/admin/items" id="menuItemList" style="display:none;">아이템델타</a>
+
+                       <!-- <a href="/admin/item/new">아이템폼</a>
+                        <a href="/admin/items">아이템델타</a>-->
+                        <a href="/products">주방용품</a>
+                        <a href="#">생활용품</a>
+                        <a href="#">패션 잡화</a>
+                        <a href="#">홈 케어</a>
+                        <a href="#">펫 라이프</a>
+                        <a href="#">웰빙</a>
+                    </div>
+                </div>
+
+                <div class="menu-item" onclick="toggleDropdown(this)">  <!-- 리액트 넘어가는 페이지 -->
+                    STATISTIC
+                    <div class="dropdown">
+                        <a href="http://192.168.0.183:3000/dashboard/SalaryListPage">급여 정산</a>
+                        <a href="http://192.168.0.183:3000/dashboard/SettlementDashboard">통계 정산</a>
+                        <a href="http://192.168.0.183:3000/dashboard/FinanceReport">재무제표</a>
+                    </div>
+                </div>
+
+                <!-- CART 메뉴 (수정됨) -->
+                <div class="menu-item">
+                    <a href="/cart" class="menu-item">CART</a>
+                </div>
+
+                <div class="menu-item" onclick="location.href='/members/userMyPage'">
+                    MYPAGE
+                    <!--<div class="dropdown">
+                        <a href="/members/userMyPage">나의 정보</a>
+                        <a href="/cartList">카트리스트</a>
+                        <a th:href="@{/cart/order/history}">오더히스트</a>
+                    </div>-->
+                </div>
+
+                <!-- 메뉴바 내 Chat 버튼 -->
+                <div class="menu-item" onclick="openChatPopup(event)">
+                    CHAT
+                </div>
+
+                <div class="user-actions">
+                    <div class="search-container">
+                        <input type="text" placeholder="검색" aria-label="Search">
+                        <button class="Search-button">Search</button>
+                        <button id="login-btn" class="login-button" onclick="location.href='/members/login'">Login</button>
+                        <button id="logout-btn" class="logout-button" style="display:none;">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <!-- 페이지별 컨텐츠 삽입 -->
+    <main class="content-placeholder" layout:fragment="content">
+        <p>기본 컨텐츠</p>
+    </main>
+
+</div>
+
+<footer>
+    <div th:replace="fragments/footer :: footer"></div>
+</footer>
+
+<!-- 관리자 추가 부분 -->
+<!-- 관리자 추가 부분 -->
+<script src="/js/tokenManager.js"></script>
+
+<script>
+    window.addEventListener("DOMContentLoaded", async () => {
+        await window.tokenManager.initOnPageLoad();
+        updateButtons();
+        checkAdminMenus(); // 💡 추가: 관리자 메뉴 권한 체크
+    });
+</script>
+
+<!-- 💡 추가: 관리자 메뉴 권한 체크 함수 -->
+<script>
+    async function checkAdminMenus() {
+        try {
+            const res = await tokenManager.fetchWithToken("/admin/item/new/check");
+            if (res.ok) {
+                // 관리자면 메뉴 표시
+                document.getElementById('menuItemForm').style.display = 'block';
+                document.getElementById('menuItemList').style.display = 'block';
+            }
+        } catch (err) {
+            console.log("관리자 메뉴 숨김");
+        }
+    }
+</script>
+
+
+<!-- 공용 JS -->
+
+<!--토큰 관련 코드-->
+<script src="/js/tokenManager.js"></script>
+
+<script>
+    window.addEventListener("DOMContentLoaded", async () => {
+        // 1. 토큰 초기화
+        await window.tokenManager.initOnPageLoad();
+        // 2. 버튼 UI 갱신
+        updateButtons();
+    });
+</script>
+
+
+<!--로그인 로그아웃 버튼-->
+<script>
+    function updateButtons() {
+        const token = window.tokenManager.getAccessToken();
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        if (token) {
+            loginBtn.style.display = 'none';
+            logoutBtn.style.display = 'inline-block';
+        } else {
+            loginBtn.style.display = 'inline-block';
+            logoutBtn.style.display = 'none';
+        }
+    }
+</script>
+
+
+<script>
+    document.getElementById("logout-btn").addEventListener("click", async function () {
+        if (!confirm("로그아웃 하시겠습니까?")) return;
+
+        try {
+            const res = await fetch("/api/auth/logout", {
+                method: "POST",
+                credentials: "include", // RefreshToken 쿠키 포함
+                headers: {
+                    "Authorization": "Bearer " + tokenManager.getAccessToken(), // AccessToken 포함
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (res.ok) {
+                alert("로그아웃 성공");
+                tokenManager.clearAccessToken(); // AccessToken 클리어
+                window.location.href = "/"; // 메인으로 이동
+            } else {
+                const err = await res.json();
+                alert("로그아웃 실패: " + (err.message || res.status));
+            }
+        } catch (e) {
+            console.error("로그아웃 요청 실패", e);
+            alert("로그아웃 요청 중 오류 발생");
+        }
+    });
+</script>
+
+<script>
+    // 메뉴 dropdown 토글
+    function toggleDropdown(elem) {
+        const dropdown = elem.querySelector('.dropdown');
+        if (!dropdown) return;
+
+        // 다른 열려있는 dropdown 닫기
+        document.querySelectorAll('.menu-item .dropdown').forEach(d => {
+            if (d !== dropdown) d.style.display = 'none';
+        });
+
+        // 현재 dropdown 토글
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function openChatPopup(event) {
+        event.preventDefault();
+        const width = 500;
+        const height = 900;
+        const left = (window.screen.width / 2) - (width / 2);
+        const top = (window.screen.height / 2) - (height / 2);
+
+        window.open(
+            '/api/chat/', // chattest.html 경로
+            'ChatPopup',
+            `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
+        );
+    }
+
+    document.addEventListener('click', function(event) {
+        const popup = document.getElementById('chatPopup');
+        if (popup && !event.target.closest('#chatPopup') && !event.target.closest('.menu-item')) {
+            popup.style.display = 'none';
+        }
+    });
+
+    // 페이지 클릭 시 모든 dropdown 닫기
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.menu-item')) {
+            document.querySelectorAll('.menu-item .dropdown').forEach(d => d.style.display = 'none');
+        }
+    });
+</script>
+
+<!-- 페이지별 JS 삽입용 fragment -->
+<th:block layout:fragment="script"></th:block>
+
+</body>
+</html>

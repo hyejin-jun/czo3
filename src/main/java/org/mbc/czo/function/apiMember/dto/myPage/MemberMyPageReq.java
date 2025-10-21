@@ -1,0 +1,13 @@
+package org.mbc.czo.function.apiMember.dto.myPage;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class MemberMyPageReq {
+
+    private String mid;
+}

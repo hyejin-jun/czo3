@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+
+<head>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+<div layout:fragment="content">
+    <!-- 메인 처음 이미지 상자 -->
+    <div class="full-bleed">
+        <div class="main-rec">
+            <div class="main-image-container">
+                <img src="/images/main_v.png" class="main-image" alt="이미지">
+                <div class="overlay-text">
+                    <div class="main-ti">Value for the Earth,<br>Thr Choice of Today,</div>
+                    <div class="main-su-ti">Re:Life</div>
+                </div>
+            </div>
+
+
+            <div class="section F1F8E9-bg">
+                <div class="buy-wrapper">
+                    <div class="buy-box">
+                        <br>
+                        <a style="font-size: 25px">Re:Life<br>
+                            <a style="font-size: 15px">
+                                Zero Waste is a lifestyle and philosophy focused on completely <br>
+                                eliminating waste by redesigning products, rethinking consumption,<br>
+                                and keeping materials in continuous use, while Upcycling is the creative<br>
+                                practice of taking discarded or unused items and transforming them <br>
+                                into new, functional, or aesthetically valuable products,
+                                giving them a second life and reducing the strain on natural resources.<br>
+
+                                <button>RIGHT NOW</button>
+                    </div>
+                    <!-- <img src="/images/wk2.png" class="wk-image" alt="이미지">-->
+                    <img rel="preload" src="/images/wkdus1.png" data-hover-wk="/images/wk2.png" class="wk-image" alt="wk">
+
+
+                </div>
+            </div>
+
+            <div class="main-container">
+                <img src="/images/see.png" class="overlay-image" alt="이미지">
+                <div class="sof-circle">WARNING
+                </div>
+            </div>
+
+            <!-- 베스트 상품 그런 거 -->
+            <div class="section fff-bg">
+                <a style="font-size: 45px">RE:LIFE CHOICE</a>
+                <div class="slider-container">
+                    <div class="product-track">
+
+                        <div class="product-be">
+                            <img rel="preload" src="/images/blue1.png" data-hover-be="/images/blue2.png" alt="상품1">
+                            <div class="product-name">SHAMPOO BAR</div>
+                            <div class="product-price">50,500 WON</div>
+                        </div>
+                        <div class="product-be">
+                            <img rel="preload" src="/images/cldir1.png" data-hover-be="/images/cldir2.png" alt="상품2">
+                            <div class="product-name">SOLID TOOTHPASTE</div>
+                            <div class="product-price">40,000 WON</div>
+                        </div>
+                        <div class="product-be">
+                            <img rel="preload" src="/images/ki1.png" data-hover-be="/images/ki2.png" alt="상품3">
+                            <div class="product-name">KEY RING</div>
+                            <div class="product-price">18,000 WON</div>
+                        </div>
+                        <div class="product-be">
+                            <img rel="preload" src="/images/bag1.png" data-hover-be="/images/bag2.png" alt="상품4">
+                            <div class="product-name">BAG</div>
+                            <div class="product-price">180,000 WON</div>
+                        </div>
+                        <div class="product-be">
+                            <img rel="preload" src="/images/su.png" data-hover-be="/images/tn2.png" alt="상품5">
+                            <div class="product-name">SCRUB BAR</div>
+                            <div class="product-price">14,000 WON</div>
+                        </div>
+
+                        <div class="product-be" >
+                            <img rel="preload" src="/images/red1.png" data-hover-be="/images/red2.png" alt="상품6">
+                            <div class="product-name">BODY BAR</div>
+                            <div class="product-price">85,000 WON</div>
+                        </div>
+                        <div class="product-be">
+                            <img rel="preload" src="/images/ki3.png" data-hover-be="/images/ki4.png" alt="상품7">
+                            <div class="product-name">KEY RING</div>
+                            <div class="product-price">50,000 WON</div>
+                        </div>
+                        <div class="product-be">
+                            <img rel="preload" src="/images/yel1.png" data-hover-be="/images/yel2.png" alt="상품8">
+                            <div class="product-name">BODY BAR</div>
+                            <div class="product-price">59,500 WON</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 초이스 세션 -->
+        <section class="section F1F8E9-bg">
+            <a style="font-size: 45px">BEST ITEM</a>
+            <div class="product-ch-row" >
+                <div class="product-ch" >
+                    <img src="/images/red1.png" data-hover="/images/red2.png" alt="상품2">
+                    <div class="product-name">BODY BAR</div>
+                    <div class="product-price">85,000 WON</div>
+                </div>
+                <div class="product-ch">
+                    <img src="/images/ki3.png" data-hover="/images/ki4.png" alt="상품3">
+                    <div class="product-name">KEY RING</div>
+                    <div class="product-price">50,000 WON</div>
+                </div>
+                <div class="product-ch">
+                    <img src="/images/yel1.png" data-hover="/images/yel2.png" alt="상품3">
+                    <div class="product-name">BODY BAR</div>
+                    <div class="product-price">59,500 WON</div>
+                </div>
+                <div class="product-ch">
+                    <img src="/images/se1.png" data-hover="/images/se2.png" alt="상품3">
+                    <div class="product-name">SOLID SOFTENER</div>
+                    <div class="product-price">200,500 WON</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="custom-box">
+            <div class="custom-box-left">
+                <img src="/images/wleh.png" alt="Sample Image">
+            </div>
+            <div class="custom-box-right">
+                <p style="font-size: 45px;">RE:LIFE SHOP<br>
+                <p style="color: #aaa; font-size: 15px;">당신의 선물을 기다리고 있습니다<br>
+                    당신이 보낸 선물이 세상을 살립니다<br><br>
+                    세상에 대한 아이디어, 리라이프</p>
+                <button class="custom-box-btn" type="button" onclick="window.location.href='https://forms.gle/VG7XyN19oKi1UVnJA'">
+                    기부하기
+                </button>
+
+            </div>
+        </div>
+
+
+
+
+        <script>
+
+            /* 초이스 상품 이미지 변하기*/
+            document.addEventListener('DOMContentLoaded', () => {
+                const products = document.querySelectorAll('.product-ch img');
+
+                products.forEach(img => {
+                    // 원래 이미지 소스 저장
+                    const originalSrc = img.src;
+                    // 호버 이미지 소스 저장
+                    const hoverSrc = img.getAttribute('data-hover');
+
+                    // 마우스를 올렸을 때
+                    img.addEventListener('mouseenter', () => {
+                        img.src = hoverSrc;
+                    });
+
+                    // 마우스가 벗어났을 때
+                    img.addEventListener('mouseleave', () => {
+                        img.src = originalSrc;
+                    });
+                });
+            });
+
+            document.addEventListener("DOMContentLoaded", () => {
+                const track = document.querySelector(".product-track");
+                const products = Array.from(track.querySelectorAll(".product-be"));
+                const itemsPerPage = 4;
+                const gap = 20;
+
+                let productWidth = products[0].offsetWidth;
+                let pageWidth = (productWidth + gap) * itemsPerPage;
+                let index = 0;
+                let pageCount = Math.ceil(products.length / itemsPerPage);
+
+
+                const firstClones = [];
+                const lastClones = [];
+
+                /* 두 번째 이미지 */
+                function addHoverEvent(container) {
+                    container.querySelectorAll("img[data-hover-be]").forEach(img => {
+                        const originalSrc = img.src;
+                        const hoverSrc = img.getAttribute("data-hover-be");
+
+                        if (hoverSrc) {
+                            const preload = new Image();
+                            preload.src = hoverSrc;
+                        }
+
+                        img.addEventListener("mouseenter", () => {
+                            img.src = hoverSrc;
+                        });
+
+                        img.addEventListener("mouseleave", () => {
+                            img.src = originalSrc;
+                        });
+                    });
+                }
+
+                // 원본에도 이벤트
+                products.forEach(addHoverEvent);
+
+                for (let i = 0; i < itemsPerPage; i++) {
+                    const firstClone = products[i].cloneNode(true);
+                    const lastClone = products[products.length - 1 - i].cloneNode(true);
+
+                    firstClone.classList.add("clone");
+                    lastClone.classList.add("clone");
+
+                    // 클론에도 이벤트
+                    addHoverEvent(firstClone);
+                    addHoverEvent(lastClone);
+
+                    firstClones.push(firstClone);
+                    lastClones.unshift(lastClone);
+                }
+
+                lastClones.forEach(clone => track.insertBefore(clone, track.firstChild));
+                firstClones.forEach(clone => track.appendChild(clone));
+
+                // 초기 위치
+                track.style.transform = `translateX(-${pageWidth}px)`;
+
+                function moveNext() {
+                    index++;
+                    track.style.transition = "transform 0.5s ease";
+                    track.style.transform = `translateX(-${pageWidth * (index + 1)}px)`;
+
+                    track.addEventListener(
+                        "transitionend",
+                        () => {
+                            if (index >= pageCount) {
+                                track.style.transition = "none";
+                                index = 0;
+                                track.style.transform = `translateX(-${pageWidth}px)`;
+                            }
+                        },
+                        { once: true }
+                    );
+                }
+
+                let slideInterval = setInterval(moveNext, 3000);
+
+                window.addEventListener("resize", () => {
+                    clearInterval(slideInterval);
+
+                    productWidth = products[0].offsetWidth;
+                    pageWidth = (productWidth + gap) * itemsPerPage;
+                    pageCount = Math.ceil(products.length / itemsPerPage);
+
+                    track.style.transition = "none";
+                    track.style.transform = `translateX(-${pageWidth * (index + 1)}px)`;
+
+                    slideInterval = setInterval(moveNext, 3000);
+                });
+            });
+
+
+
+
+        </script>
+    </div>
+</div>
+</body>
+</html>

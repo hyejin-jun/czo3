@@ -1,0 +1,2290 @@
+@font-face {
+    font-family: 'Ownglyph_corncorn-Rg';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_corncorn-Rg.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Paperozi4';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-3Light.woff2') format('woff2');
+    font-weight: 300;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Paperozi8';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
+    font-weight: 800;
+    font-display: swap;
+}
+
+body, button, input, select, textarea {  /*모든 버튼 폰트 적용*/
+    font-family: 'Ownglyph_corncorn-Rg', sans-serif;
+}
+
+/* 메뉴바 전체 글꼴 적용 */
+.menu-bar, .menu-item, .menu-item .dropdown a {
+    font-family: 'Ownglyph_corncorn-Rg', sans-serif !important;
+}
+
+/* 버튼에 강제 적용 */
+button {
+    font-family: 'Ownglyph_corncorn-Rg', sans-serif !important;
+}
+
+body {
+    color: #009879;
+    background: none;
+    border: none;
+    justify-content: center; /* 가로 중앙 */
+/*    align-items: center;*/
+    height: 100%;
+    padding: 0;
+ /*   margin: 0;*/
+    display: flex;
+    flex-direction: column;
+    justify-items: anchor-center;
+}
+
+
+a-body {
+margin: 0;
+padding: 0;
+line-height: 1.6;
+color: #333;
+    height: 100%;
+}
+
+
+
+.title, h1, h2, h3, h4, h5, h6 {
+font-family: 'Ownglyph_corncorn-Rg', sans-serif;
+font-weight: bold;
+margin: 0;
+padding: 0;
+justify-content: center; /* 가로 중앙 */
+display: flex;
+}
+
+button, input[type="button"], input[type="submit"] {
+font-family: 'Ownglyph_corncorn-Rg', sans-serif !important;
+font-size: 1rem;
+padding: 0.5em 1em;
+cursor: pointer;
+}
+
+
+.custom-font {
+font-family: 'Ownglyph_corncorn-Rg', sans-serif;
+}
+
+.card {
+    border: none;
+    box-shadow: none;
+    }
+
+    /* 카드 헤더 */
+    .card-header {
+    font-size: 22px;
+    font-weight: bold;
+    color: #009879;
+    background: none;
+    border: none;
+    padding-left: 0;
+    }
+
+.custom-select {
+    color: #009879;
+}
+
+    /* 카드 타이틀 */
+    .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #009879;
+    margin-bottom: 20px;
+    }
+
+    /* 테이블 */
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    text-align: center;      /* 기본 가운데 */
+    vertical-align: middle;  /* 세로도 가운데 */
+}
+
+    /* 보드 테이블*/
+    .board-table{
+    border-bottom: 2px solid #009879; /* 회색 얇은 밑줄 */
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    text-align: center;      /* 기본 가운데 */
+    vertical-align: middle;  /* 세로도 가운데 */
+    }
+
+    .board-table th{
+    white-space: nowrap;   /* 줄바꿈 방지 */
+    text-overflow: ellipsis; /* 너무 길면 ... 처리 */
+    overflow: hidden;
+    vertical-align: middle; /* 세로 가운데 정렬 */
+    border-bottom: 1px solid #009879;
+}
+
+    /* 카트 테이블*/
+    .cart-table{
+        border-bottom: 2px solid #009879; /* 회색 얇은 밑줄 */
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        text-align: center;      /* 기본 가운데 */
+        vertical-align: middle;  /* 세로도 가운데 */
+    }
+
+    .cart-table td{
+        white-space: nowrap;   /* 줄바꿈 방지 */
+        text-overflow: ellipsis; /* 너무 길면 ... 처리 */
+        overflow: hidden;
+        vertical-align: middle; /* 세로 가운데 정렬 */
+        border-bottom: 1px solid #009879;
+    }
+
+/* 첫번째 체크박스 칸은 너무 좁으면 이상하니까 */
+.table th:first-child,
+.table td:first-child {
+    width: 50px;
+    text-align: center;
+}
+
+    /* 행 hover 효과 */
+    .table tbody tr:hover {
+    background-color: #f8fdfb;
+    }
+
+    .page-item {
+    margin: 0 4px;
+    }
+
+    .page-link {
+    border: none;
+    color: #009879;
+    font-weight: 500;
+    background: transparent;
+    font-size: 15px;
+    }
+
+    .page-item.active .page-link {
+    background-color: white;
+    color: #009879;
+    border-radius: 4px;
+    padding: 6px 12px;
+    }
+
+    .table-body {
+        font-size: 18px;
+        border-bottom: 1px solid #009879; /* 회색 얇은 밑줄 */
+        color: #009879;
+        background: none;
+        padding-left: 0;
+    }
+
+.list-end {
+    font-size: 18px;
+    border-bottom: 2px solid #009879; /* 회색 얇은 밑줄 */
+    color: #009879;
+    background: none;
+    padding-left: 0;
+}
+
+
+.table-body td {
+        font-size: 15px;
+        color: #009879; /* 글자 색상 */
+    }
+
+
+.board-container {
+    width: 80%;
+    margin: 2rem auto;
+    text-align: left;
+}
+
+.table th, .table td {
+    padding: 0.5rem 1rem;
+    text-align: center;
+}
+
+.table th:nth-child(1), .table td:nth-child(1) { width: 60px; }   /* 번호 */
+.table th:nth-child(2), .table td:nth-child(2) { min-width: 800px; text-align: center; }  /* 제목 */
+.table th:nth-child(3), .table td:nth-child(3) { min-width: 150px; text-align: left; } /* 작성자 */
+.table th:nth-child(4), .table td:nth-child(4) { width: 120px; }  /* 작성일 */
+.table th:nth-child(5), .table td:nth-child(5) { width: 100px; }  /* 조회 수 */
+
+
+
+.board-header {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #009879;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #009879;
+    margin-bottom: 1.5rem;
+}
+
+.board-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #009879;
+}
+
+.board-item:last-of-type {
+    border-bottom: none;
+}
+
+.board-label {
+    width: 120px;
+    font-weight: bold;
+    color: #009879;
+}
+
+.board-value {
+    flex-grow: 1;
+    color: #009879;
+}
+
+.board-content {
+    padding: 1.5rem 0;
+    color: #009879;
+}
+
+.btn-list, .btn-modify, .btn-remove{
+    background-color: #009879;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 5px 16px;
+    border: none;
+    margin-top: 5px;
+    white-space: nowrap;
+    font-size: 16px;
+}
+
+.btn-list:hover, .btn-modify:hover, .btn-remove:hover {
+    background-color: #007f5f;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.clean-input {
+    color: #aaa;
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-size: 1rem;
+    resize: none; /* textarea 크기 조절 안 되게 */
+    border-bottom: 1px solid #009879;
+}
+
+.clean-bore {
+    color: #aaa;
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-size: 1rem;
+    resize: none; /* textarea 크기 조절 안 되게 */
+}
+
+/* 선택 시 깜빡임 커서만 보이도록 */
+.clean-input:focus{
+    outline: none;
+    border-bottom: 1px solid #ccc; /* 원하면 밑줄만 표시 */
+}
+
+/* placeholder 색상 */
+.clean-input::placeholder{
+    color: #aaa;
+}
+.board-value.readonly input,
+.board-value.readonly textarea {
+    border: none;
+    background: transparent;
+    color: #009879;
+    pointer-events: none;
+    resize: none;
+    font-size: 1rem;
+}
+
+.board-value input,
+.board-value textarea {
+    width: 100%;
+    border: none;
+    resize: none;
+    font-size: 1rem;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem;
+    gap: 10px;
+    border-top: 1px solid #009879;
+}
+
+.button-group button {
+    background-color: #009879;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.button-group button:hover {
+    opacity: 0.9;
+}
+
+table, th, td {
+    border: none;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* 가로축 가운데 */
+    justify-content: center; /* 세로축 가운데 */
+    text-align: center;
+
+
+}
+
+.id-find{
+    text-align: center;
+}
+
+
+.input-group{
+    text-align: right;
+
+
+}
+
+.input-group-prepend{
+    text-align: center;
+}
+
+
+.form-control {
+    border: 2px dashed #009879;  /* 점선 */
+    padding: 10px;              /* 내부 여백 */
+    border-radius: 6px;         /* 패더 넣음 */
+    font-size: 14px;
+    white-space: nowrap; /* 줄바꿈 방지 */
+    text-align: left; /* 텍스트 왼쪽 정렬 */
+    color: #aaa;
+}
+
+
+
+
+.table th {
+    color: #009879;
+    border-bottom: 2px solid #009879;
+    padding: 12px;
+    text-align: center;
+    white-space: nowrap;
+    font-weight: normal; /* 기본 굵기 제거 */
+}
+
+.table td {
+    border-bottom: 1px solid #009879;
+    padding: 12px;
+    text-align: center;
+    color: #aaa;
+    white-space: nowrap;
+}
+
+/* 행 hover 효과 */
+.table tbody tr:hover {
+    background-color: #f8fdfb;
+}
+
+
+.page-item.active .page-link {
+    background-color: #009879;
+    color: #fff;
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+
+
+.table-body td {
+    font-size: 15px;
+    color: #009879; /* 글자 색상 */
+    border: none; /* 추가: 테이블 바디 셀의 선 제거 */
+}
+
+
+/* 카드 헤더 */
+.card-header {
+    font-size: 22px;
+    font-weight: bold;
+    color: #009879;
+    background: none;
+    border: none;
+    padding-left: 0;
+}
+
+/* 카드 타이틀 */
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #009879;
+    margin-bottom: 20px;
+}
+
+/* 테이블 */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    table-layout: auto;
+}
+
+
+/* 행 hover 효과 */
+.table tbody tr:hover {
+    background-color: #f8fdfb;
+}
+
+/* 페이지네이션 */
+.pagination {
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* 페이지네이션 스타일 강제 적용 */
+.pagination {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    list-style: none !important;
+    padding-left: 0 !important;
+    margin: 20px 0 !important;
+}
+
+.pagination .page-item {
+    display: inline-block !important;
+    margin: 0 2px !important;
+}
+
+.page-item {
+    margin: 0 4px;
+}
+
+.page-link {
+    border: none;
+    color: #009879;
+    font-weight: 500;
+    background: transparent;
+    font-size: 15px;
+}
+
+.page-item.active .page-link {
+    background-color: #009879;
+    color: #fff;
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+/* 글쓰기 버튼 */
+.btn-write {
+    background-color: #009879;
+    font-size: 16px;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 8px 16px;
+    border: none;
+    float: right;
+    margin-top: 10px;
+    text-align: right;
+    justify-content: flex-end; /* 오른쪽 끝으로 */
+    font-size: 16px;
+}
+
+/* 글쓰기 버튼 */
+.btn-board {
+    background-color: #009879;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 8px 16px;
+    border: none;
+    float: right;
+    margin-top: 10px;
+    text-align: right;
+    margin-right: 10px; /* 필요하면 오른쪽 여백 */
+    font-size: 16px;
+
+}
+
+
+.btn-board-con {
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 끝으로 */
+}
+
+.btn-write:hover {
+    background-color: #009879;
+    color: white;
+}
+
+
+.table-body td {
+    font-size: 15px;
+    color: #009879; /* 글자 색상 */
+}
+.menu-body {
+    margin: 0;
+    padding: 20px;
+}
+
+/* 메뉴 바 */
+.menu-bar {
+    background-color: white;
+    padding: 10px;
+    display: flex;
+   /* gap: 20px;*/
+    align-items: center;
+}
+
+.menu-item {
+    font-size: 20px;
+    position: relative; /* dropdown 기준이 될 수 있게 */
+    text-decoration: none;
+    color: #009879;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;        /* inline-block 대신 flex */
+    align-items: center;  /* 글자 정렬 */
+    white-space: nowrap;
+    padding: 10px 15px;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;   /* 부모 메뉴 바로 아래 */
+    left: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    flex-direction: column; /* 세로 정렬로 변경 */
+    min-width: 180px;
+    z-index: 1000;
+    text-align: center;
+}
+
+.menu-item.active .dropdown {
+    display: flex;
+}
+
+.dropdown a {
+    display: block;   /* a 태그를 블록화해서 전체 가로 차지 */
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #009879;
+}
+
+.dropdown a:hover {
+    background-color: #f0f0f0;
+}
+
+.header-container {
+    border-bottom: 1px solid #009879;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 50px;
+    background-color: #fff;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 70px;
+    margin-right: 40px;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: #009879;
+    font-weight: bold;
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-container {
+    position: relative;
+}
+
+.search-container input {
+    padding: 8px 12px;
+    border: 1px solid #009879;
+    border-radius: 5px;
+}
+
+.Search-button {
+    padding: 10px 20px;
+    background-color: #009879;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Ownglyph_corncorn-Rg', sans-serif !important; /* 폰트 박기 */
+}
+.login-button {
+    padding: 10px 20px;
+    background-color: #009879;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Ownglyph_corncorn-Rg', sans-serif !important;
+}
+
+
+.logout-button {
+    padding: 10px 20px;
+    background-color: #009879;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Ownglyph_corncorn-Rg', sans-serif !important;
+}
+
+
+.content-placeholder {
+    min-height: 500px;
+    padding-top: 20px;   /* 위쪽 여백만 줄임 */
+    padding-bottom: 50px; /* 아래쪽은 여유 둠 */
+    justify-content: center;  /* 가로 중앙 */
+    align-items: center;      /* 세로 중앙 */
+    text-align: center;
+}
+
+.content-item {
+    flex-direction: column;    /* 세로 배치 */
+    justify-content: center;   /* 세로 중앙 */
+    align-items: center;       /* 가로 중앙 */
+    min-height: calc(100vh - 100px); /* 화면 전체 높이에서 배너/푸터 여백 제외 */
+    padding: 20px 0;
+    width: 100%;
+}
+
+/* 안쪽 컨테이너 너비만 고정 */
+.content-item .container {
+    width: 1200px;   /* 필요시 너비 조절 */
+    max-width: 95%;  /* 화면 좁을 때 반응형 */
+}
+
+
+.hero {
+    text-align: center;
+    padding: 0px;
+    position: relative;
+}
+
+.mug-container {
+    display: inline-block;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+
+
+
+.sof-circle {
+        position: absolute;       /* 이미지가 아닌 main-container를 기준으로 위치함 */
+        top: 30%;
+        left: 38%;
+        /*transform: !*translateX(-20%)*! rotate(-5deg); !* 기울이기 *!*/
+        transform-origin: center;  /* 회전 기준점: 중앙 */
+        width: 400px;
+        height: 200px;
+        background: red;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        font-size: 55px;
+        z-index: 10;
+        font-family: 'Paperozi8', serif;  /* 다른 폰트 적용 */
+
+}
+
+.sof-circle:hover {
+    transform:  scale(1.2);
+}
+
+.buy-box {
+    display: inline-block;
+    background: #f5f5a0;
+    padding: 15px;
+    margin-top: 50px; /* 위쪽 여백으로 내림 */
+    border-radius: 5px;
+    width: 500px;
+    text-align: center;
+    color: black;
+    font-size: 25px;
+    gap: 40px;
+    /* top 제거 */
+}
+
+.buy-box button {
+    display: block;          /* 버튼 중앙 정렬 */
+    margin: 15px auto 0 auto;
+    background-color: orange;
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+
+.gallery-item img {
+    width: 100%;
+    display: block;
+}
+
+
+.F1F8E9-bg {
+    margin: 50px 0 0 0; /* 위쪽에 간격 추가함 */
+    text-align: center;
+    background-color: #F1F8E9;
+    padding: 80px 20px;
+    width: 97%; /* 화면 전체 너비 기준 */
+}
+
+.FFD94D-bg {
+    margin: 50px 0 0 0; /* 위쪽에 간격 추가함 */
+    text-align: center;
+    background-color: #FFD94D;
+    padding: 80px 20px;
+    width: 97%; /* 가로 꽉 차게 */
+}
+
+.fff-bg {
+    background-color: #fff;
+    padding: 50px 20px;
+    clip-path: polygon(0 0, 100% 10%, 100% 100%, 0% 100%);
+    width: 100vw;
+    text-align: center;
+}
+
+
+h2 {
+    font-size: 2em;
+    margin-bottom: 30px;
+}
+
+
+main-body {
+    margin: 0;
+    padding: 0;
+    display: block;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #fff;
+    font-family: 'omyu_pretty', sans-serif !important;
+}
+
+.container {
+    width: 150px;
+    height: 80px;
+    display: flex;
+    gap: 50px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    padding: 30px;
+}
+
+.left, .right {
+    flex: 1 1 400px;
+}
+
+.left img, .right img {
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.text {
+  /*  margin-top: 20px;*/
+    font-size: 16px;
+    line-height: 1.5;
+    color: #008060; /* 초록 계열 */
+    font-style: italic;
+}
+
+
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        gap: 30px;
+    }
+}
+
+footer {
+    background-color: #009879;
+    color: white;
+    padding: 30px 50px;
+    font-size: 14px;
+     text-align: center;
+    margin-top: auto;
+    width: 100%;
+    box-sizing: border-box;
+    flex-shrink: 0;
+
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.footer-left h3 {
+    font-weight: bold;
+}
+
+.footer-links {
+    display: flex;
+    gap: 60px;
+}
+
+.footer-links div {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-links h4 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    margin: 4px 0;
+    font-size: 14px;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+.footer-bottom {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding-top: 15px;
+    font-size: 12px;
+}
+
+.btn-images{
+    color: #009879;
+    border-radius: 4px;
+    padding: 5px 16px;
+    border: none;
+    margin-top: 5px;
+}
+
+.item-ch{
+    display: flex;
+}
+
+.text-success {
+    color: #009879 !important;  /* 초록색 */
+    text-decoration: none;      /* 밑줄 제거 */
+    font-weight: 500;
+}
+
+.text-success:hover {
+    text-decoration: underline; /* hover 시만 밑줄 */
+    color: #007d63;            /* hover 시 진한 초록 */
+}
+
+.loginPage {
+    font-size: 25px;
+    font-weight: bold;
+    color: #009879;
+    background: none;
+    border: none;
+    padding-left: 0;
+}
+
+
+/* 행 hover 효과 */
+.table tbody tr:hover {
+    background-color: #f8fdfb;
+}
+
+
+
+.page-item.active .page-link {
+    background-color: #009879;
+    color: #fff;
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+/* 로그인 버튼 */
+.btn-login {
+    background-color: #009879;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 5px 16px;
+    border: none;
+    float: right;
+    margin-top: 5px;
+    font-size: 16px;
+}
+
+.kakaologin {
+    background-color: #FFD94D;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 5px 16px;
+    border: none;
+    float: right;
+    margin-top: 5px;
+    font-size: 16px;
+}
+
+.btn-login, .kakaologin {
+    margin: 5px; /* 버튼 사이 간격 */
+}
+
+
+.table-body td {
+    font-size: 15px;
+    color: #009879; /* 글자 색상 */
+}
+
+
+.btn-submit {
+    background-color: #009879;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 5px 16px;
+    border: none;
+    margin-top: 5px;
+    white-space: nowrap;
+    font-size: 16px;
+
+}
+
+.delete-form {
+    display: flex;
+    gap: 10px; /* input과 버튼 사이 여백 */
+    justify-content: center; /* 가운데 정렬 */
+    align-items: center; /* 세로 정렬 맞추기 */
+    margin-top: 20px;
+}
+
+
+.message {
+    align-items: center;
+    font-size: 15px;
+    font-weight: bold;
+    color: #009879;
+    background: none;
+    border: none;
+    padding-left: 0;
+}
+
+.btn-del {
+    background-color: #009879;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 5px 16px;
+    border: none;
+    margin-top: 5px;
+    white-space: nowrap; /* 줄바꿈 방지 */
+    font-size: 16px;
+}
+
+.notice-row {
+    position: sticky;
+    top: 0;
+    background-color: #f8f8f8;
+    font-weight: bold;
+    color: #009879;
+}
+
+.like-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+}
+
+.like-btn.liked {
+    color: #009879;
+}
+
+
+.form-table {
+    margin: 0 auto;   /* 테이블을 카드 안에서 가로 가운데 정렬 */
+    border-collapse: separate;
+    border-spacing: 10px;
+}
+
+ .form-container {
+     display: flex;
+     justify-content: center; /* 가로 중앙 */
+     align-items: center;     /* 세로 중앙 */
+     min-height: 100vh;
+ }
+
+.form-card {
+    background: #fff;
+    padding: 100px 40px;
+    border-radius: 12px;
+    border: 1px dashed #009879;  /* 점선 */
+    min-width: 500px;
+    min-height: 400px;
+}
+
+.form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.form-row label {
+    width: 120px;
+    text-align: right;
+    margin-right: 15px;
+    font-weight: 600;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea {
+    flex: 1;
+    max-width: 300px;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.form-row textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+table.form-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.form-table td {
+    padding: 10px;
+    vertical-align: middle;
+}
+
+table.form-table td.label {
+    width: 120px;
+    text-align: right;
+    font-weight: bold;
+}
+
+table.form-table td.input {
+    text-align: left;
+}
+
+
+.itemForm-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #fff;
+}
+
+
+
+.form-table {
+    margin: 0 auto;      /* 테이블 자체를 가로 중앙 */
+}
+
+.form-table td {
+    text-align: center;  /* 각 칸 안 내용도 중앙 */
+    padding: 10px;
+}
+
+.font-color{
+    color: #aaa;
+    white-space: nowrap;
+}
+
+/* 컨테이너 중앙 정렬 */
+.admin-container {
+    max-width: 1200px;   /* 필요하면 조절 */
+    margin: 0 auto;
+    padding: 16px;
+    text-align: left;
+}
+/* 테이블 가운데 정렬 */
+.table-responsive {
+    display: flex;
+    justify-content: center;
+}
+
+/* 조작 버튼들(수정/삭제) 오른쪽 정렬하고 간격 */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* 버튼 가시성/클릭 보장 (오버레이 때문에 안되는 경우 방지) */
+.action-buttons,
+.action-buttons .btn-submit {
+    grid-template-columns: repeat(3, 1fr); /* 3열 고정 */
+    gap: 20px;  /* 카드 간격 */
+}
+
+
+/* 아이템 매니저 부분 테이블 설정*/
+.table.product-table th:nth-child(1),
+.table.product-table td:nth-child(1) { width: 60px !important; }
+
+.table.product-table th:nth-child(2),
+.table.product-table td:nth-child(2) { width: 100px !important; }
+
+.table.product-table th:nth-child(3),
+.table.product-table td:nth-child(3) { width: 250px !important; text-align: left; }
+
+.table.product-table th:nth-child(4),
+.table.product-table td:nth-child(4) { width: 120px !important; }
+
+.table.product-table th:nth-child(5),
+.table.product-table td:nth-child(5) { width: 150px !important; }
+
+.table.product-table th:nth-child(6),
+.table.product-table td:nth-child(6) { width: 180px !important; }
+
+.table.product-table th:nth-child(7),
+.table.product-table td:nth-child(7) { width: 140px !important; }
+
+.product-table th{
+    white-space: nowrap;   /* 줄바꿈 방지 */
+    text-overflow: ellipsis; /* 너무 길면 ... 처리 */
+    overflow: hidden;
+    vertical-align: middle; /* 세로 가운데 정렬 */
+    border-bottom: 2px solid #009879;
+}
+
+.product-table td {
+    white-space: nowrap;   /* 줄바꿈 방지 */
+    text-overflow: ellipsis; /* 너무 길면 ... 처리 */
+    overflow: hidden;
+    vertical-align: middle; /* 세로 가운데 정렬 */
+    border-bottom: 1px solid #009879;
+}
+
+.product-table {
+    table-layout: fixed; /* 열 너비 고정 */
+    border-bottom: 2px solid #009879;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+
+.paging-wrapper {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 80px; /* 푸터와 간격 */
+    justify-content: center; /* 세로 중앙 */
+    align-items: center;     /* 가로 중앙 */
+}
+
+
+
+.btn-submit-add {
+    background-color: #009879;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 5px 16px;
+    border: none;
+    margin-top: 5px;
+    white-space: nowrap;
+    font-size: 16px;
+}
+
+.btn-submit-re {
+    background-color: #009879;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 5px 16px;
+    border: none;
+    margin-top: 5px;
+    white-space: nowrap;
+    font-size: 16px;
+}
+
+
+.btn-submit-del {
+    background-color: #009879;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 5px 16px;
+    border: none;
+    margin-top: 5px;
+    white-space: nowrap;
+    font-size: 16px;
+}
+
+
+.container-3 {
+    width: 150px;
+    height: 80px;
+    display: flex;
+    gap: 50px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    padding: 30px;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.layout-content {
+    flex: 1; /* 푸터 제외한 영역 차지 */
+    padding: 20px 0;
+}
+
+
+.a-card-container {
+    display: grid;
+    grid-template-columns: repeat(3, 300px); /* 열 3개, 카드 너비 300px 고정 */
+    grid-template-rows: repeat(2, auto);    /* 행 2개 */
+    justify-content: center; /* 전체 그리드 중앙 정렬 */
+    gap: 50px;               /* 카드 사이 간격 */
+    margin-bottom: 40px;
+}
+
+
+.a-card {
+    border: 1px dashed #009879;  /* 점선 */
+    padding: 10px;              /* 내부 여백 */
+    width: 300px; /* 카드 고정 너비 */
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none; /* 밑줄 제거 */
+}
+.a-card a {
+    color: inherit;        /* 부모 글자 색상 상속 */
+    text-decoration: none; /* 밑줄 제거 */
+}
+
+
+.a-card img {
+    width: 100%;
+    height: 200px; /* 카드 높이 고정 */
+    object-fit: cover; /* 이미지 비율 유지 */
+}
+
+.a-card-body {
+    padding: 15px;
+}
+
+
+.card-reply {
+    background-color: #fff;
+    color: #009879;
+    padding: 12px;
+    text-align: center;
+    white-space: nowrap;
+    font-weight: normal; /* 기본 굵기 제거 */
+}
+
+/* 라벨(댓글 내용, 작성자)을 input-group 스타일에 맞게 */
+.list-input-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 100px;       /* 라벨 칸 고정 넓이 */
+    background-color: #fff; /* 배경 유지 */
+    border-radius: 6px 0 0 6px;
+    padding: 10px;
+    font-weight: normal;
+}
+
+/* 입력창 */
+.list-input-input {
+    flex: 1;                  /* 남은 공간 다 차지 */
+    border: 2px dashed #009879;
+    border-radius: 0 6px 6px 0;
+    padding: 10px;
+    font-size: 14px;
+    color: #aaa;
+}
+
+/* 버튼 */
+.list-btn-submit {
+    background-color: #009879;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 6px 16px;
+    border: none;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+
+
+.modal-body,
+.modal-footer {
+    display: flex;
+    justify-content: center;  /* 가로 중앙 */
+    align-items: center;      /* 세로 중앙 */
+    flex-direction: row;   /* 위아래로 쌓음 (원하면 row로 변경) */
+    gap: 10px;                /* 요소 사이 간격 */
+}
+
+.board-list-group { /* 문의사항 검색창 간격*/
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 정렬 */
+    gap: 3px; /* 요소 간 간격 */
+}
+
+.center-content {
+    text-align: center; /* 글자와 링크 가로 중앙 */
+}
+
+.item-category-nav a {
+    text-decoration: none; /* 밑줄 제거 */
+    color: inherit;        /* 글자색 상속 */
+    margin: 0 5px;         /* 링크 사이 간격 */
+    font-size: 15px;
+}
+
+.category hr {
+    margin: 10px auto;     /* hr도 중앙 */
+    width: 50%;            /* hr 길이 */
+}
+
+.category hr {
+    border: none;       /* 기존 선 없애기 */
+    height: 1px;        /* 선 높이 */
+    background: #009879;   /* 연한 회색으로 바꾸거나 투명 가능 */
+    margin: 10px auto;  /* 중앙 배치 */
+}
+
+.product-detail {
+    display: flex;               /* 가로 배치 */
+    flex-direction: row;         /* 기본값 row, 명시적으로 작성 */
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    align-items: flex-start;     /* 세로 위쪽 정렬 */
+    gap: 30px;                   /* 이미지와 설명 사이 간격 */
+}
+
+.repImg {
+    display: block; /* 이미지도 block으로 */
+}
+
+.h4{
+    font-size: 35px;
+}
+
+.h5{
+    font-size: 25px;
+}
+
+.custom-hr {
+    border: none;           /* 기본 hr 선 제거 */
+    border-top: 2px solid #009879; /* 선 색상과 두께  */
+    margin: 20px 0;         /* 상하 간격 */
+}
+
+.repImgDiv {
+    display: flex;              /* Flex 컨테이너 */
+    justify-content: center;    /* 가로 중앙 정렬 */
+    align-items: center;        /* 세로 중앙 정렬 (필요 시) */
+}
+
+
+
+.btn-cart {
+    background-color: #009879;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 8px 16px;
+    border: none;
+    font-size: 16px;
+}
+
+.cartList-form {
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 정렬 */
+    gap: 10px; /* 버튼 사이 간격 */
+    margin-top: 10px; /* 위쪽 여백 */
+}
+    /* 카드 내부 레이아웃 */
+
+.card-item {
+    border-radius: 8px;
+  /*  box-shadow: 0 4px 12px rgba(0,0,0,0.1);*/
+    padding: 80px;  /* 내부 여백 */
+    border: 1px dashed #009879;  /* 점선 */
+
+}
+
+.card-item-row {
+    display: flex;
+    justify-content: center; /* 가로 중앙 */
+    gap: 50px;               /* 카드 사이 간격 */
+    flex-wrap: wrap;         /* 화면 작으면 아래로 내려가도록 */
+}
+
+
+.cont {
+    /*    width: 150px;
+        display: flex;*/
+    gap: 50px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    padding: 30px;
+    justify-content: center; /* 가로 중앙 */
+}
+
+.card-container {
+    display: flex;
+    justify-content: center; /* 가로 중앙 */
+    align-items: center;     /* 세로 중앙 */
+    min-height: 100vh;       /* 화면 전체 높이 */
+}
+
+/* 반응형: 화면 좁으면 세로로 쌓임 */
+@media (max-width: 991px) {
+    .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+.d-flex > .card {
+    flex: 0 0 100%;
+}
+
+
+.form-label{
+    justify-content: center; /* 가로 중앙 */
+}
+
+.btn-order {
+    background-color: #009879;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 5px 16px;
+    border: none;
+    margin-top: 5px;
+    white-space: nowrap;
+    justify-content: center; /* 가로 중앙 */
+    display: block;      /* 또는 inline-block */
+    margin-left: auto;   /* 좌우 자동 */
+    margin-right: auto;  /* 좌우 자동 */
+    font-size: 16px;
+
+}
+
+.right-mod {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* 오른쪽 정렬 */
+}
+.dr-com{
+    justify-content: center;  /* 가로 중앙 */
+    align-items: center;      /* 세로 중앙 */
+
+}
+
+
+.card-com {
+    border-radius: 8px;
+    /*  box-shadow: 0 4px 12px rgba(0,0,0,0.1);*/
+    padding: 80px;  /* 내부 여백 */
+    border: 1px dashed #009879;  /* 점선 */
+
+}
+
+.card-com-row {
+    display: flex;
+    justify-content: center; /* 가로 중앙 */
+    gap: 50px;               /* 카드 사이 간격 */
+    flex-wrap: wrap;         /* 화면 작으면 아래로 내려가도록 */
+}
+
+.card-hi {
+    border-radius: 8px;
+    /*  box-shadow: 0 4px 12px rgba(0,0,0,0.1);*/
+    padding: 80px;  /* 내부 여백 */
+    border: 1px dashed #009879;  /* 점선 */
+
+}
+
+.card-hi-row {
+    display: flex;
+    justify-content: center; /* 가로 중앙 */
+    gap: 50px;               /* 카드 사이 간격 */
+    flex-wrap: wrap;         /* 화면 작으면 아래로 내려가도록 */
+}
+
+.order-main{
+
+    justify-content: center;  /* 가로 중앙 */
+    align-items: center;      /* 세로 중앙 */
+}
+
+.btn-order {
+    background-color: #009879;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 8px 16px;
+    border: none;
+    float: right;
+    margin-top: 10px;
+    text-align: right;
+    font-size: 16px;
+}
+
+.button-box {
+    display: flex;
+    justify-content: center; /* 중앙 정렬 */
+    gap: 15px;               /* 버튼 사이 간격 */
+    margin-top: 20px;
+}
+
+.btn-submit, .btn-order {
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.main-container {
+    position: relative; /* circle이 이 컨테이너를 기준으로 위치하도록 함 */
+    display: inline-block; /* 컨테이너 크기를 이미지에 맞춤 */
+    margin: 0;      /* 위/아래 여백 제거 */
+    padding: 0;
+}
+
+.circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 80px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 14px;
+    z-index: 1;
+
+}
+
+.main-left, .main-right {
+    position: relative; /* circle을 기준 잡아줄 부모 */
+}
+
+
+.overlay-image {
+    /* 이미지는 문서 흐름에 남아있도록 position: absolute를 제거함 */
+
+    display: block; /* 이미지 하단의 기본 여백 제거 */
+    width: 100vw;
+    height: 600px;
+    margin: 0;
+
+}
+
+.main-text {
+    position: absolute;
+    color: white;
+    font-size: 2em;
+    font-weight: bold;
+    z-index: 2; /* 이미지 위 */
+    text-align: center;
+}
+
+.main-image {
+    display: block;
+    width: 100vw;    /* 가로 꽉 채우기 */
+    height: 800px;   /* 비율 유지 */
+    margin: 0;
+}
+
+.main-image-container {
+    position: relative; /* 자식의 절대 위치를 기준으로 설정 */
+    display: inline-block; /* 이미지 크기만큼 컨테이너 크기 */
+}
+
+.overlay-text {
+    width: 0%; /* 전체 너비 사용 */
+    position: absolute; /* 부모 요소를 기준으로 위치 지정 */
+    top: 50px;
+    right: 700px; /* 박스를 오른쪽 끝에 딱 붙입니다. */
+    box-sizing: border-box; /* 패딩을 너비에 포함시켜 여백을 만듭니다. */
+    margin: 0;
+    padding: 0;
+    color: white;
+    z-index: 10;
+    text-align: right;
+    white-space: nowrap; /* 줄바꿈 방지 */
+}
+
+.overlay-text .main-ti {
+    font-family: 'Paperozi4', sans-serif; /* 폰트 변경 */
+    font-size: 65px;                        /* 크기 */
+    margin: 0;
+}
+
+.overlay-text .main-su-ti{
+    font-family: 'Paperozi8', serif;  /* 다른 폰트 적용 */
+    font-size: 180px;
+    margin: 0;
+}
+
+
+.F1F8E9-bg {
+    margin: 150px 0 0 0; /* 위쪽에 간격 추가함 */
+    text-align: center;
+    background-color: #F1F8E9;
+    padding: 80px 20px;
+    width: 100vw; /* 가로 꽉 차게 */
+    height: 420px;
+
+}
+
+.wk-image {
+    position: relative;
+    z-index: 1;
+    width: 600px;       /* 너무 크지 않게 */
+    height: auto;        /* 자연스러운 비율 유지 */
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 15px; /* 약간 둥글게 */
+    margin-left: 20px;
+    top: 30px;
+
+}
+
+
+.buy-wrapper {
+    display: flex;
+    justify-content: center; /* 가로 중앙 */
+    align-items: center;     /* 세로 중앙 */
+    gap: 150px;               /* 텍스트와 이미지 간격 */
+    height: 350px;
+    align-content: center;
+}
+
+@keyframes slide {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+
+
+.section.F1F8E9-bg {
+    margin: 0;           /* section 위쪽 여백 제거 */
+    padding: 40px 20px;  /* 내부 여백만 조정 */
+}
+
+.section {
+    margin: 0;          /* 위/아래 불필요한 여백 제거 */
+    padding: 40px 20px; /* 내부 여백만 조정 */
+}
+
+.donation-section {
+    display: flex;
+    align-items: center;       /* 세로 중앙 정렬 */
+    justify-content: space-between;
+    gap: 50px;                      /* 텍스트와 이미지 사이 간격 */
+    padding: 50px 20px;        /* 섹션 전체 여백 */
+    background-color: #f7f7f7; /* 원하는 배경색 */
+}
+
+.donation-text {
+    width: 400px; /* 크기 조정 */
+    margin: 0;    /* float 대신 margin 제거 */
+    text-align: right;
+
+}
+
+.donation-text p {
+    line-height: 1.6;
+    font-size: 18px;
+    color: #333;
+}
+
+.btn-gi {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: orange;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.donation-image img {
+    max-width: 400px;          /* 이미지 크기 조절 */
+
+    height: auto;
+    border-radius: 10px;       /* 살짝 둥글게 */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2); /* 자연스러운 그림자 */
+    TOP:100px;
+}
+
+.D6E883-bg {
+    margin: 50px 0 0 0; /* 위쪽에 간격 추가함 */
+    text-align: center;
+    background-color: #D6E883;
+    padding: 80px 20px;
+    width: 97%; /* 화면 전체 너비 기준 */
+}
+
+.aaa-bg {
+    display: flex;
+    justify-content: flex-end; /* 오른쪽으로 보냄 */
+    align-items: flex-start;   /* 위쪽 정렬 */
+    padding: 20px;             /* 필요에 따라 패딩 조정 */
+    gap: 20px;                 /* 이미지와 텍스트 간격 */
+    width: 100vw;
+}
+
+.section.aaa-bg > .sec {
+    display: flex;
+    justify-content: flex-start;  /* 오른쪽 끝 말고 왼쪽으로 붙임 */
+    align-items: flex-start;
+                   /* 이미지와 텍스트 사이 간격 */
+    padding-left: 0;           /* 전체를 왼쪽으로 여유 있게 */
+}
+
+.donation-image{
+    left: 100px;
+    top:30px;
+}
+
+.main-css{
+    width: 100%;
+    margin: 0 auto;    /* 가운데 정렬 */
+    padding: 0;        /* 내부 여백 제거 */
+}
+
+.main-rec{
+    width: 100%;
+
+}
+
+.full-bleed {
+    width: 100vw;          /* 화면 전체 가로 폭 */
+    height: 100%;         /* 화면 전체 세로 높이 */
+    object-fit: cover;     /* 넘치면 잘림 */
+    overflow: hidden;      /* 넘어가는 부분 숨김 */
+}
+
+.bo-bleed {
+    justify-content: flex-start;  /* 오른쪽 끝 말고 왼쪽으로 붙임 */
+}
+
+.custom-box {
+    display: flex;
+    align-items: center;        /* 세로 가운데 정렬 */
+    justify-content: center;    /* 가로 중앙 정렬 */
+    gap: 100px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fff;
+    max-width: 1000px;          /* 박스 최대 너비 */
+    margin: 0 auto;             /* 화면 중앙 */
+
+}
+
+.custom-box-left img {
+    width: 400px;
+    max-width: 100%;            /* 화면보다 크면 자동 축소 */
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    margin-top: 50px; /* 이미지 아래로 살짝 이동 */
+}
+
+.custom-box-btn {
+    padding: 10px 20px;
+    background-color: orange;
+    color: white;
+    border: none;
+    border-radius: 10px;        /* 버튼 둥글게 */
+  /*  cursor: pointer;*/
+    transition: all 0.2s ease;
+}
+
+.custom-box-btn:hover {
+    background-color: #ffc965;
+    transform: translateY(-2px);
+}
+
+.product-ch-row {
+    display: flex;
+    flex-wrap: nowrap;       /* 줄바꿈 절대 안 되게 */
+    justify-content: space-between; /* 4개 균등 배치 */
+    gap: 20px;               /* 아이템 사이 여백 */
+}
+
+.product-ch { /* 초이스 아이템 */
+    flex: 0 0 25%;           /* 한 줄에 딱 4개 */
+    box-sizing: border-box;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;  /* 이미지 위, 텍스트 아래 */
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+}
+
+.product-ch img {
+    width: 100%;
+    max-width: 190px;        /* 원하는 크기 제한 */
+    height: auto;
+    border-radius: 10px;
+    gap: 10px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.product-ch img:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+
+    .product-name {
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .product-price {
+        margin-top: 5px;
+        font-weight: bold;
+    }
+
+    .slider-container {
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+    }
+
+.slider-container {
+    width: 100%;
+    overflow: hidden;
+}
+
+.product-track {
+    display: flex;
+    transition: transform 0.5s ease;
+    gap: 20px;            /* 아이템 간 간격 */
+}
+
+.product-be {
+    flex: 0 0 calc(25% - 10px); /* 한 줄에 4개, gap 반영 */
+    box-sizing: border-box;
+    padding: 10px;
+    text-align: center;
+}
+.product-be img {
+    width: 100%;
+    max-width: 200px;        /* 원하는 크기 제한 */
+    height: auto;
+    border-radius: 10px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.product-be img:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+.room-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* 버튼/입력칸 간 간격 */
+    flex-wrap: wrap; /* 화면이 좁으면 자동 줄바꿈 */
+
+}
+
+.room-button {
+    padding: 10px 20px;
+    background-color: #009879;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Ownglyph_corncorn-Rg', sans-serif !important; /* 폰트 박기 */
+}
+
+.room-controls input {
+    width: 60px; /* 필요 시 입력칸 폭 조절 */
+}
+
+.rooms-container {
+    display: flex;
+    gap: 20px; /* 두 칸 사이 간격 */
+}
+
+.rooms-container > div {
+    flex: 1; /* 균등 폭 */
+}
+
+h3.section-title {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    margin-top: 20px;
+}
+#chatRooms, #myChatRooms, #participants, #chatMessages {
+    border: 1px solid #ccc;
+    padding: 5px;
+    overflow-y: scroll;
+}
+
+#participants, #chatMessages, #chatRoomInput, #messageInput, #sendBtn,
+#participants-title, #chatMessages-title {
+    display: none; /* 기본 숨김 */
+}
+.uploadBtn {
+    padding: 3px 6px;       /* 작게 조정 */
+    font-size: 12px;        /* 글자 작게 */
+    height: 30px;
+    /* 입력창과 비슷한 높이 */
+    border-radius: 4px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.uploadBtn:hover {
+    background-color: #45a049;
+}
+
+#chatRoomInput {
+    height: 30px;           /* 버튼 높이에 맞춤 */
+    font-size: 12px;
+}
+
+#chatRooms { height: 100px; margin-top: 5px; }
+#myChatRooms { height: 100px; margin-top: 5px; }
+#participants {
+    height: 70px;
+    margin-top: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    overflow-y: auto; /* 스크롤 추가 */
+}
+#chatMessages { height: 420px; margin-top: 5px; }
+#chatRooms li, #myChatRooms li { cursor: pointer; }
+.participant-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 70px;
+    text-align: center;
+    font-size: 12px;
+}
+.participant-item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #ccc;
+}
+/* 전체 버튼 기본 스타일 */
+button {
+    font-size: 12px;        /* 글자 크기 축소 */
+    padding: 4px 8px;       /* 위아래 4px, 좌우 8px */
+    margin-left: 3px;       /* 버튼 간격 조정 */
+    border-radius: 4px;     /* 모서리 살짝 둥글게 */
+    cursor: pointer;
+    background-color: #f0f0f0; /* 버튼 배경색 */
+    border: 1px solid #ccc;    /* 테두리 */
+}
+
+/* 버튼 호버 효과 */
+button:hover {
+    background-color: #e0e0e0;
+}
+
+/* 메시지 입력창 */
+#messageInput {
+    width: 80%;           /* 가로 길이 크게 */
+    height: 40px;         /* 세로 높이 크게 */
+    font-size: 16px;      /* 글자 크기 */
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+/* 전송 버튼 */
+#messageInput + button {
+    height: 40px;         /* 입력창 높이와 맞춤 */
+    font-size: 16px;      /* 글자 크기 */
+    padding: 0 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #4CAF50; /* 예쁜 녹색 */
+    color: white;
+    border: none;
+}
+
+#messageInput + button:hover {
+    background-color: #45a049;
+}
+
+/* 외부 스크립트 충돌 방지용: 요소를 일시적으로 숨김 */
+.temp-hidden {
+    visibility: hidden;
+}
+
+/* 평점 입력 필드의 스타일 */
+.star-rating {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.stars {
+    display: flex;
+    align-items: center;
+}
+.rating-input {
+    width: 80px;
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 8px 5px;
+}
+
+/* 평점 안내 텍스트 스타일 */
+.rating-text {
+    font-size: 16px;
+    color: #666;
+    font-weight: 500;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+}
+.rating-text.selected {
+    color: #333;
+    font-weight: bold;
+}
+
+/* 이미지 업로드 안내 텍스트 스타일 */
+.upload-info {
+    color: #666;
+    font-size: 12px;
+}
+
+/* 미리보기 및 결과 영역 스타일 */
+.preview-area {
+    margin-top: 10px;
+}
+.result-area {
+    margin-top: 20px;
+    text-align: center;
+    white-space: pre-wrap;
+}
+
+/* 버튼 스타일 */
+.btn-wrapper {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+.btn-cancel {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.btn-cancel:hover {
+    background-color: #5a6268;
+}
+
+/* readonly 입력 필드 스타일 */
+input[readonly] {
+    background-color: #f8f9fa;
+}
+
+.review-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: white;
+}
+
+.review-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 8px;
+}
+
+.review-author {
+    font-weight: bold;
+    color: #333;
+}
+
+.review-date {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.review-rating {
+    color: #ffd700;
+    margin-left: 20px;
+    font-size: 30px;
+}
+
+.review-content {
+    color: #555;
+    line-height: 1.6;
+    margin-top: 10px;
+}
+
+.star-rating .star {
+    font-size: 24px;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s;
+    margin-right: 5px;
+}
+
+.star-rating .star:hover {
+    color: #ffd700;
+}
+
+.no-reviews {
+    text-align: center;
+    padding: 40px 20px;
+    font-style: italic;
+}
+
+.pagination .page-link {
+    color: #009879;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #009879;
+    border-color: #009879;
+}
+
+.review-list {
+    display: flex;
+    flex-direction: column;   /* 세로로 쌓이게 */
+    justify-content: center;  /* 세로 가운데 */
+    align-items: center;      /* 가로 가운데 */
+    text-align: center;       /* 글자도 가운데 */
+    gap: 10px;                /* 리뷰 상자 간 간격 */
+    background: white;
+}
+
+/* 리뷰 아이템 크기 조정 */
+.review-item {
+    width: 60%;               /* 전체 폭의 60% (적당히 작게) */
+    max-width: 600px;         /* 최대 크기 제한 */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background: white;
+}

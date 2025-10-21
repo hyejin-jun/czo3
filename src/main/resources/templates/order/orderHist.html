@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+<div layout:fragment="content">
+  <div class="board-container">
+    <h2>주문 내역</h2>
+
+    <div class="card-hi-row" id="order-container">
+      <p>불러오는 중...</p>
+    </div>
+
+    <nav aria-label="Page navigation example" id="pagination-container"></nav>
+
+    <div class="card-com-row">
+      <div class="card com">
+        <a th:href="@{/}" class="order-main"
+           style="text-decoration: none; color: inherit; font-size: 25px">홈으로</a>
+      </div>
+    </div>
+  </div>
+
+  <th:block layout:fragment="script">
+    <script type="module">
+
+      // 주문 내역 불러오기 함수
+      async function loadOrders(page = 1) {
+        try {
+          await window.tokenManager.initOnPageLoad();
+          const res = await window.tokenManager.fetchWithToken(`/cart/order/api/history?page=${page}&pageSize=5`);
+          if (!res.ok) throw new Error("주문 내역 불러오기 실패");
+
+          const data = await res.json();
+          renderOrders(data);
+          renderPagination(data.page, data.totalPages);
+        } catch (err) {
+          console.error(err);
+          document.getElementById('order-container').innerHTML = '<p>주문 내역 불러오기 실패</p>';
+        }
+      }
+
+      // 🌟 리뷰 작성 페이지로 이동하는 함수 (삭제됨. renderOrders 내부에서 직접 처리하도록 복구)
+      // function openReviewPage(orderId, itemNm, itemId) { ... }
+
+      // 주문 내역 렌더링
+      function renderOrders(data) {
+        const container = document.getElementById('order-container');
+        container.innerHTML = '';
+
+        if (!data.orders || data.orders.length === 0) {
+          container.innerHTML = `<p>주문 내역이 없습니다.</p>`;
+          return;
+        }
+
+        data.orders.forEach(order => {
+          const card = document.createElement('div');
+          card.className = 'card mb-3';
+          card.dataset.orderId = order.orderId;
+
+          // 주문 상태에 따른 버튼 표시 로직 개선
+          const isCancelled = order.status === 'CANCEL' || order.status === 'CANCELLED';
+
+          card.innerHTML = `
+            <div class="card-header">
+              <strong>주문 ID:</strong> ${order.orderId} |
+              <strong>회원 ID:</strong> ${order.memberId} |
+              <strong>주문 상태:</strong> <span class="order-status">${order.status}</span> |
+              <strong>총 결제 금액:</strong> ${data.orderTotalMap[order.orderId]} 원 |
+              <strong>주문일:</strong> ${new Date(order.orderDate).toLocaleString()}
+              ${!isCancelled ? '<button class="btn btn-submit cancel-btn">주문 취소</button>' : ''}
+            </div>
+            <ul class="list-group list-group-flush">
+              ${order.orderItems.map(item => {
+            // 🌟🌟🌟 itemId를 item.itemId에서 가져오고, 없으면 0으로 처리 (버튼 생성 조건 확보)
+            const itemId = item.itemId || 0;
+            const itemNm = item.itemNm || '';
+
+            // URL 쿼리 파라미터 생성 (Controller 요구사항: orderId, itemId)
+            const reviewUrl = `/reviews/view/open?orderId=${order.orderId}&itemNm=${encodeURIComponent(itemNm)}&itemId=${itemId}`;
+
+            return `
+                  <li class="list-group-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <div>
+                        <strong>상품명:</strong> ${item.itemNm} |
+                        <strong>수량:</strong> ${item.count} |
+                        <strong>가격:</strong> ${item.orderPrice} 원
+                      </div>
+                      ${!isCancelled && itemId > 0
+                    // 🌟🌟🌟 버튼을 다시 보이도록 수정 (onclick 직접 사용) 🌟🌟🌟
+                    ? `<button class="btn btn-sm btn-outline-primary"
+                                     onclick="window.location.href='${reviewUrl}'"
+                                     style="margin-left: 10px;">
+                                 리뷰 작성
+                             </button>`
+                    : ''}
+                    </div>
+                  </li>
+                `;
+          }).join('')}
+            </ul>
+          `;
+          container.appendChild(card);
+        });
+
+        // 🌟 리뷰 작성 버튼 이벤트 리스너 제거 (onclick으로 대체했으므로)
+        // container.querySelectorAll('.review-btn').forEach(btn => { ... });
+
+        // 주문 취소 버튼 이벤트
+        container.querySelectorAll('.cancel-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const card = btn.closest('.card');
+            const orderId = card.dataset.orderId;
+
+            if (!confirm('정말 주문을 취소하시겠습니까?')) return;
+
+            try {
+              btn.disabled = true;
+              btn.textContent = '취소 중...';
+
+              await window.tokenManager.initOnPageLoad();
+
+              const res = await window.tokenManager.fetchWithToken('/cart/order/cancel', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams({ orderId })
+              });
+
+              if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`HTTP ${res.status}: ${errorText}`);
+              }
+
+              const result = await res.text();
+
+              if (result === 'success') {
+                card.querySelector('.order-status').textContent = 'CANCEL';
+
+                // 주문 취소 버튼 제거
+                btn.remove();
+
+                // 리뷰 작성 버튼 제거 (onclick 방식에 맞게 선택자 변경)
+                card.querySelectorAll('button[onclick*="/reviews/view/open"]').forEach(rBtn => rBtn.remove());
+
+                alert('주문이 성공적으로 취소되었습니다.');
+                setTimeout(() => window.location.reload(), 1000);
+              } else if (result === 'unauthorized') {
+                alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+                window.location.href = '/members/login';
+              } else {
+                throw new Error(result || '알 수 없는 오류가 발생했습니다.');
+              }
+
+            } catch (error) {
+              console.error('주문 취소 오류:', error);
+
+              if (error.message.includes('unauthorized') || error.message.includes('401')) {
+                alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+                window.location.href = '/members/login';
+                return;
+              }
+
+              alert('주문 취소 실패: ' + error.message);
+              btn.disabled = false;
+              btn.textContent = '주문 취소';
+            }
+          });
+        });
+      }
+
+      // 페이징 버튼 렌더링
+      function renderPagination(page, totalPages) {
+        if (totalPages <= 1) {
+          document.getElementById('pagination-container').innerHTML = '';
+          return;
+        }
+
+        const container = document.getElementById('pagination-container');
+        let html = '<ul class="pagination justify-content-center">';
+
+        if (page > 1) {
+          html += ` <li class="page-item"><a class="page-link" href="#" data-page="${page - 1}">이전</a> </li>`;
+        }
+
+        for (let i = 1; i <= totalPages; i++) {
+          html += ` <li class="page-item ${i === page ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li> `;
+        }
+
+        if (page < totalPages) {
+          html += ` <li class="page-item"><a class="page-link" href="#" data-page="${page + 1}">다음</a></li> `;
+        }
+
+        html += '</ul>';
+        container.innerHTML = html;
+
+        container.querySelectorAll('.page-link').forEach(link => {
+          link.addEventListener('click', e => {
+            e.preventDefault();
+            const selectedPage = parseInt(e.target.dataset.page);
+            if (!isNaN(selectedPage)) loadOrders(selectedPage);
+          });
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', async () => {
+        loadOrders(1);
+      });
+
+    </script>
+  </th:block>
+</div>
+</body>
+</html>

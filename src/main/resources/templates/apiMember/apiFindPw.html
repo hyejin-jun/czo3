@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+<head>
+  <meta charset="UTF-8">
+  <title>비밀번호 찾기</title>
+  <!--<style>
+    .success { color: green; }
+    .error { color: red; }
+    .form-control { display:block; margin-bottom:10px; padding:5px; width:200px; }
+    .btn-submit { padding:5px 10px; }
+  </style>-->
+</head>
+
+<body>
+<div layout:fragment="content">
+
+  <h1>비밀번호 찾기</h1>
+
+  <div id="message"></div>
+
+  <!-- 이메일 인증 -->
+  <div>
+    <label for="memail">이메일</label>
+    <input type="email" class="form-control" id="memail" required>
+    <button type="button" id="sendEmailBtn" class="btn-submit">인증번호 발송</button>
+    <span id="emailMessage" style="color:blue; margin-left:10px;"></span>
+  </div>
+
+  <!-- 인증번호 입력 섹션 -->
+  <div id="verifySection" style="display:none;">
+    <input type="text" id="emailCode" class="form-control" placeholder="인증번호 입력">
+    <button type="button" id="verifyBtnPW" class="btn-submit">인증 확인</button>
+    <span id="verifyMessage" style="color:green; margin-left:10px;"></span>
+  </div>
+
+  <!-- 비밀번호 찾기 폼 -->
+  <form id="findPwForm">
+    <label for="mname">이름</label>
+    <input type="text" id="mname" class="form-control" required>
+    <button type="button" id="findPwBtn" class="btn-submit" disabled>비밀번호 찾기</button>
+  </form>
+
+
+</div>
+
+<th:block layout:fragment="script">
+  <script src="/js/mailCheck.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const findPwBtn = document.getElementById("findPwBtn");
+      // 비밀번호 찾기 버튼 클릭
+      findPwBtn.addEventListener("click", async () => {
+
+        const email = document.getElementById("memail").value;
+        const name = document.getElementById("mname").value;
+
+        try {
+          const res = await fetch("/api/members/find-pw", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ memail: email, mname: name })
+          });
+          const result = await res.json();
+          if (result.success) {
+            sessionStorage.setItem("changePWAccountID", result.data.mid);
+            window.location.href = "/members/resetPw";
+          } else {
+            document.getElementById("message").textContent = "실패: " + result.message;
+          }
+        } catch(err) {
+          console.error(err);
+          document.getElementById("message").textContent = "서버 오류 발생";
+        }
+      });
+    });
+  </script>
+</th:block>
+</body>
+</html>

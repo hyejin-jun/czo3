@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>비밀번호 초기화</title>
+</head>
+<body>
+
+<main layout:fragment="content" class="card-body">
+
+    <h1>비밀번호 초기화</h1>
+    <br><br><br>
+
+    <!-- 서버/검증 메시지 -->
+    <div id="message"></div>
+
+    <!-- 비밀번호 초기화 폼 -->
+    <form id="registerForm">
+        <div class="input-group mb-3">
+            <span class="input-group-text">ID</span>
+            <input type="text" class="form-control" name="changePWAccountID" id="changePWAccountID" readonly>
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text">PW</span>
+            <input type="password" class="form-control" name="mpassword" id="mpassword" placeholder="새로운 비밀번호" required>
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text">PWCHECK</span>
+            <input type="password" class="form-control" name="mpasswordcheck" id="mpasswordcheck" placeholder="비밀번호 확인" required>
+        </div>
+
+        <!-- 비밀번호 검증 메시지 -->
+        <div id="pwMessage" style="margin-bottom:10px; color:red;"></div>
+
+        <div class="my-4">
+            <div class="float-end">
+                <button type="button" class="btn-submit" id="checkBtn">Check</button>
+                <button type="button" class="btn-submit" id="submitBtn" disabled>Submit</button>
+                <button type="reset" class="btn-submit">Reset</button>
+            </div>
+        </div>
+    </form>
+
+</main>
+
+
+
+
+<th:block layout:fragment="script">
+    <script src="/js/passwordCheck.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const submitBtn = document.getElementById("submitBtn");
+            const pwMessage = document.getElementById("pwMessage");
+            const accountIDInput = document.getElementById("changePWAccountID");
+
+            accountIDInput.value = sessionStorage.getItem("changePWAccountID") || "";
+
+            submitBtn.addEventListener("click", async () => {
+                const pw = document.getElementById("mpassword").value;
+                const accountID = accountIDInput.value;
+
+                try {
+                    const response = await fetch("/api/members/password", {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ mid: accountID, mnewPassword: pw })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        sessionStorage.removeItem("changePWAccountID");
+                        window.location.href = "/";
+                    } else {
+                        pwMessage.textContent = "비밀번호 변경 실패: " + result.message;
+                        pwMessage.className = "error";
+                    }
+                } catch (err) {
+                    console.error(err);
+                    pwMessage.textContent = "서버 오류 발생";
+                    pwMessage.className = "error";
+                }
+            });
+        });
+    </script>
+
+</th:block>
+
+</body>
+</html>

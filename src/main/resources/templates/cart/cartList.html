@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <h2>장바구니</h2>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <div class="board-container">
+        <table class="table cart-table">
+            <thead>
+            <tr>
+                <!-- 상품이미지 컬럼 삭제 -->
+                <th>상품명</th>
+                <th>수량</th>
+                <th>가격</th>
+                <th>합계</th>
+                <th>작업</th>
+            </tr>
+            </thead>
+            <tbody id="cart-body">
+            <!-- JS에서 렌더링 -->
+            </tbody>
+        </table>
+        <br><br>
+
+        <!-- 요약 정보 박스 -->
+        <div class="summary-box mt-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2 class="text">📦 총 상품 수량: <span id="total-quantity" class="text">0</span> 개</h2>
+                </div>
+                <div class="col-md-6 text-end">
+                    <h3 class="text">💰 총 결제 금액: <span id="cart-total" class="text">0</span> 원</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="cartList-form justify-content-end gap-2">
+            <button id="btn-clear" class="btn btn-cart">전체 비우기</button>
+            <button id="btn-order" class="btn btn-cart">주문하기</button>
+        </div>
+        <br><br><br>
+
+        <th:block layout:fragment="script">
+            <script>
+                async function loadCart() {
+                    const res = await tokenManager.fetchWithToken("/cart/api/cart");
+                    if (!res.ok) {
+                        if (res.status === 401) window.location.href = "/members/login";
+                        return;
+                    }
+                    const data = await res.json();
+                    renderCart(data);
+                }
+
+                function renderCart(data) {
+                    const tbody = $("#cart-body");
+                    tbody.empty();
+
+                    if (!data.cartItems || data.cartItems.length === 0) {
+                        tbody.append(`<tr id="empty-cart-row">
+            <td colspan="5" class="text-muted py-4">
+                <div class="text-center">
+                    <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                    <p>장바구니가 비어있습니다.</p>
+                </div>
+            </td>
+        </tr>`);
+                        calculateCartSummary();
+                        return;
+                    }
+
+                    data.cartItems.forEach(item => {
+                        tbody.append(`
+            <tr data-id="${item.cartItemId}" data-price="${item.price}">
+                <td>${item.itemNm}</td>
+                <td><input type="number" min="1" class="form-control form-control-sm qty-input" value="${item.count}"/></td>
+                <td>${item.price.toLocaleString()}</td>
+                <td class="item-total">${(item.price*item.count).toLocaleString()}</td>
+                <td><button class="btn btn-danger btn-del btn-delete">삭제</button></td>
+            </tr>
+        `);
+                    });
+
+                    calculateCartSummary();
+                }
+
+                // 이하 JS는 그대로 유지
+                function calculateCartSummary() {
+                    let totalAmount = 0;
+                    let totalQuantity = 0;
+
+                    $("#cart-body tr:not(#empty-cart-row)").each(function(){
+                        let price = parseInt($(this).data("price")) || 0;
+                        let qty = parseInt($(this).find(".qty-input").val()) || 0;
+                        totalAmount += price * qty;
+                        totalQuantity += qty;
+                    });
+
+                    $("#cart-total").text(totalAmount.toLocaleString());
+                    $("#total-quantity").text(totalQuantity);
+
+                    if ($("#cart-body tr:not(#empty-cart-row)").length === 0) {
+                        $("#cart-total").text("0");
+                        $("#total-quantity").text("0");
+                        showEmptyCartMessage();
+                    }
+                }
+
+                function showEmptyCartMessage() {
+                    if ($("#empty-cart-row").length === 0) {
+                        $("#cart-body").append(`
+                <tr id="empty-cart-row">
+                    <td colspan="5" class="text-muted py-4">
+                        <div class="text-center">
+                            <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                            <p>장바구니가 비어있습니다.</p>
+                        </div>
+                    </td>
+                </tr>
+            `);
+                    }
+                }
+
+                function hideEmptyCartMessage() {
+                    $("#empty-cart-row").remove();
+                }
+
+                function updateItemTotal(row) {
+                    let price = parseInt(row.data("price")) || 0;
+                    let qty = parseInt(row.find(".qty-input").val()) || 1;
+                    row.find(".item-total").text((price*qty).toLocaleString());
+                }
+
+                $(document).on("change input keyup", ".qty-input", function() {
+                    let row = $(this).closest("tr");
+                    let cartItemId = row.data("id");
+                    let newQty = parseInt($(this).val()) || 1;
+                    if (newQty < 1) { newQty = 1; $(this).val(newQty); }
+                    updateItemTotal(row);
+                    calculateCartSummary();
+
+                    clearTimeout($(this).data('timeout'));
+                    $(this).data('timeout', setTimeout(async function() {
+                        try {
+                            const res = await tokenManager.fetchWithToken("/cart/" + cartItemId, {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ count: newQty })
+                            });
+                            if (!res.ok) console.error('수량 업데이트 실패:', await res.text());
+                        } catch (err) { console.error('수량 업데이트 실패:', err); }
+                    }, 500));
+                });
+
+                $(document).on("click", ".btn-delete", function(){
+                    let row = $(this).closest("tr");
+                    let cartItemId = row.data("id");
+                    if (confirm("정말 삭제하시겠습니까?")) {
+                        (async () => {
+                            try {
+                                const res = await tokenManager.fetchWithToken("/cart/" + cartItemId + "/delete", { method: "DELETE" });
+                                if (res.ok) {
+                                    row.fadeOut(300, function() {
+                                        $(this).remove();
+                                        calculateCartSummary();
+                                        if ($("#cart-body tr:not(#empty-cart-row)").length === 0) showEmptyCartMessage();
+                                    });
+                                } else alert(await res.text());
+                            } catch (err) { alert('삭제에 실패했습니다.'); }
+                        })();
+                    }
+                });
+
+                $("#btn-clear").click(function(){
+                    if (confirm("장바구니를 모두 비우시겠습니까?")) {
+                        (async () => {
+                            try {
+                                const res = await tokenManager.fetchWithToken("/cart/clear", { method: "POST" });
+                                if (res.ok) {
+                                    $("#cart-body tr:not(#empty-cart-row)").fadeOut(300, function() {
+                                        $(this).remove();
+                                        calculateCartSummary();
+                                        showEmptyCartMessage();
+                                    });
+                                } else alert(await res.text());
+                            } catch (err) { alert('장바구니 비우기에 실패했습니다.'); }
+                        })();
+                    }
+                });
+
+                $("#btn-order").click(function(){
+                    let totalQuantity = parseInt($("#total-quantity").text()) || 0;
+                    if (totalQuantity === 0) { alert("장바구니에 상품이 없습니다."); return; }
+                    if (confirm(`총 ${totalQuantity}개 상품을 주문하시겠습니까?`)) {
+                        window.location.href = "cart/order";
+                    }
+                });
+
+                $(document).ready(async function(){
+                    await loadCart();
+                    if ($("#cart-body tr:not(#empty-cart-row)").length > 0) hideEmptyCartMessage();
+                    calculateCartSummary();
+                    $("#cart-body tr:not(#empty-cart-row)").each(function(){ updateItemTotal($(this)); });
+                });
+            </script>
+        </th:block>
+
+</body>
+</html>

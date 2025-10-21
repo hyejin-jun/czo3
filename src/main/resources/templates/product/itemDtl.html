@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+<meta charset="UTF-8">
+
+<head>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div class="card-body">
+
+        <br><br>
+        <div class="category mb-3 center-content">
+            <h2>바디케어</h2>
+            <hr>
+            <nav class="item-category-nav">
+                <a href="#">로션바</a> |
+                <a href="#">핸드케어바</a> |
+                <a href="#">풋케어바</a> |
+                <a href="#">립밤</a> |
+                <a href="#">데오드란트바</a> |
+                <a href="#">마사지바</a> |
+                <a href="#">선케어</a>
+            </nav>
+        </div>
+
+        <input type="hidden" id="itemId" th:value="${item.id}">
+        <input type="hidden" id="price" th:value="${item.price}">
+
+        <div class="product-detail">
+            <div class="repImgDiv">
+                <img th:if="${item.repImgUrl != null}"
+                     th:src="${item.repImgUrl}"
+                     th:alt="${item.itemNm}"
+                     class="repImg"
+                     style="width:500px; height:500px;
+                         object-fit:cover; justify-content: center;">
+            </div>
+
+            <div class="product-info">
+                <br>
+                <br>
+                <div class="h4" th:text="${item.itemNm}"></div>
+
+                <div class="wd50 flex-grow-1">
+                    <span th:if="${item.itemSellStatus.name() == 'SELL'}" class="badge badge-primary mb-3">
+            판매중
+        </span>
+                    <span th:unless="${item.itemSellStatus.name() == 'SELL'}" class="badge btn-danger mb-3">
+            품절
+        </span>
+
+                    <div class="h5">
+                        <span th:text="${item.price}"></span>원
+                    </div>
+                    <hr class="custom-hr">
+
+                    <div class="mb-3">
+                        <span>👁️ 조회 수: <span th:text="${item.views}">0</span></span>
+                        <span class="ms-3">❤️ 좋아요: <span id="like-count" th:text="${item.likes}">0</span></span>
+                    </div>
+
+                    <button type="button" class="btn-submit mb-3" th:onclick="addLike([[${item.id}]])">
+                        ♥ 좋아요
+                    </button>
+                    <br><br>
+
+                    <!-- 💡 추가: 관리자 전용 버튼 -->
+                    <div id="adminButtons" style="display:none; margin-bottom: 20px;">
+                        <button type="button" class="btn-submit" onclick="goToEdit()">상품 수정</button>
+                        <button type="button" class="btn-submit" onclick="deleteItemFromDetail()" style="background-color: #dc3545;">상품 삭제</button>
+                    </div>
+
+                    <div class="input-group w-50 mb-4">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">수량</span>
+                            <input type="number" id="count" class="form-control" value="1" min="1">
+                        </div>
+                    </div>
+                    <br>
+
+                    <hr class="custom-hr">
+                    <div class="text-right mb-4">
+                        <h5>결제 금액</h5>
+                        <h3 id="totalPrice" class="font-weight-bold"></h3>
+                    </div>
+
+                    <div th:if="${item.itemSellStatus.name() == 'SELL'}" class="text-right mb-3">
+                        <button type="button" class="btn-submit me-2" onclick="addToCart()">장바구니 담기</button>
+                        <button type="button" class="btn-submit" onclick="order()">주문하기</button>
+                    </div>
+                    <div th:unless="${item.itemSellStatus.name() == 'SELL'}" class="text-right mb-3">
+                        <button type="button" class="btn btn-danger btn-lg">품절</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="custom-hr">
+    <h4>상품 설명</h4>
+
+    <div th:each="fileName : ${item.fileNames}" class="text-center">
+        <img th:if="${fileName != null and fileName != ''}"
+             th:src="${fileName}"
+             class="rounded mgb-15" width="800">
+    </div>
+
+    <hr class="custom-hr">
+
+    <div class="review-section">
+        <h3>상품 리뷰 <span id="review-total-count" class="text-muted">(0)</span></h3><br>
+
+        <div class="review-list">
+            <div id="reviews-container">
+            </div>
+
+            <div class="pagination-container text-center mt-4">
+                <nav>
+                    <ul class="pagination justify-content-center" id="review-pagination">
+                    </ul>
+                </nav>
+            </div>
+            <br><br>
+        </div>
+    </div>
+
+</div>
+
+
+<div layout:fragment="script">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <!-- &lt;!&ndash; 💡 추가: tokenManager.js 로드 &ndash;&gt; -->
+    <script th:src="@{/js/tokenManager.js}"></script>
+
+    <script th:inline="javascript">
+        let currentPage = 1;
+        const pageSize = 5;
+
+        $(document).ready(function(){
+            calculateTotalPrice();
+            loadReviews();
+            $("#count").on('input change', calculateTotalPrice);
+
+            // 💡 추가: 관리자 권한 체크
+            checkAdminAuth();
+        });
+
+      /*  // 💡 추가: 관리자 권한 확인 함수
+        async function checkAdminAuth() {
+            const itemId = $("#itemId").val();
+            const res = await tokenManager.fetchWithToken(`/admin/item/${itemId}/check`);
+
+            if (res.ok) {
+                // 💡 권한이 있으면 관리자 버튼 표시
+                document.getElementById('adminButtons').style.display = 'block';
+            }
+        }
+
+        // 💡 추가: 상품 수정 페이지로 이동
+        function goToEdit() {
+            const itemId = $("#itemId").val();
+            window.location.href = `/admin/item/${itemId}`;
+        }
+
+        // 💡 추가: 상품 삭제 함수
+        async function deleteItemFromDetail() {
+            if (!confirm('정말 삭제하시겠습니까?')) {
+                return;
+            }
+
+            const itemId = $("#itemId").val();
+
+            // 💡 권한 체크 추가
+            const checkRes = await tokenManager.fetchWithToken(`/admin/item/${itemId}/check`);
+            if (!checkRes.ok) {
+                if (checkRes.status === 401) {
+                    alert("로그인이 필요합니다.");
+                    window.location.href = "/members/login";
+                } else if (checkRes.status === 403) {
+                    alert("권한이 없습니다.");
+                }
+                return;
+            }
+
+            // 💡 권한 확인 후 삭제 진행
+           /!* fetch('/admin/items', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'itemIds=' + itemId
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    window.location.href = '/products';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('삭제 중 오류가 발생했습니다.');
+                });*!/
+            // 💡 수정: tokenManager를 사용하여 인증 토큰 포함
+            try {
+                const res = await tokenManager.fetchWithToken('/admin/items', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'itemIds=' + itemId
+                });
+
+                const data = await res.text();
+
+                if (res.ok) {
+                    alert(data);
+                    window.location.href = '/products';
+                } else {
+                    alert('삭제 실패: ' + data);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('삭제 중 오류가 발생했습니다.');
+            }
+        }*/
+
+        // 관리자 권한 확인
+        async function checkAdminAuth() {
+            try {
+                const itemId = $("#itemId").val();
+                const res = await tokenManager.fetchWithToken(`/admin/item/${itemId}/check`);
+                if (res.ok) {
+                    document.getElementById('adminButtons').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('권한 체크 오류:', error);
+            }
+        }
+
+        // 상품 수정 페이지 이동
+        function goToEdit() {
+            const itemId = $("#itemId").val();
+            window.location.href = `/admin/item/${itemId}`;
+        }
+
+        // 상품 삭제
+        async function deleteItemFromDetail() {
+            if (!confirm('정말 삭제하시겠습니까?')) return;
+            const itemId = $("#itemId").val();
+
+            try {
+                const checkRes = await tokenManager.fetchWithToken(`/admin/item/${itemId}/check`);
+                if (!checkRes.ok) {
+                    if (checkRes.status === 401) {
+                        alert("로그인이 필요합니다.");
+                        window.location.href = "/members/login";
+                    } else if (checkRes.status === 403) {
+                        alert("권한이 없습니다.");
+                    }
+                    return;
+                }
+
+                const deleteRes = await tokenManager.fetchWithToken('/admin/items', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'itemIds=' + itemId
+                });
+
+                const data = await deleteRes.text();
+                if (deleteRes.ok) {
+                    alert(data);
+                    window.location.href = '/products';
+                } else {
+                    alert('삭제 실패: ' + data);
+                }
+            } catch (error) {
+                console.error('삭제 오류:', error);
+                alert('삭제 중 오류가 발생했습니다.');
+            }
+        }
+
+
+
+        function calculateTotalPrice(){
+            var count = parseInt($("#count").val()) || 1;
+            var price = parseInt($("#price").val()) || 0;
+
+            if(count < 1) {
+                count = 1;
+                $("#count").val(1);
+            }
+
+            var totalPrice = price * count;
+            $("#totalPrice").html(totalPrice.toLocaleString() + '원');
+        }
+
+        async function loadReviews(page = 1) {
+            const itemId = $("#itemId").val();
+
+            try {
+                const response = await fetch(`/api/items/${itemId}/reviews?page=${page}&size=${pageSize}`);
+
+                console.log(`🔍 리뷰 목록 요청: /api/items/${itemId}/reviews?page=${page}&size=${pageSize}`);
+                console.log('응답 상태:', response.status);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📦 받은 데이터:', data);
+
+                    displayReviews(data.reviews);
+                    displayPagination(data.totalPages, page);
+                    updateReviewCount(data.totalElements);
+                } else {
+                    console.error('❌ 리뷰 로드 실패 - 상태:', response.status);
+                    const errorText = await response.text();
+                    console.error('❌ 에러 내용:', errorText);
+                    displayNoReviews();
+                }
+            } catch (error) {
+                console.error('❌ 리뷰 로드 중 네트워크 오류:', error);
+                displayNoReviews();
+            }
+        }
+
+        function displayReviews(reviews) {
+            const container = $('#reviews-container');
+
+            if (!reviews || reviews.length === 0) {
+                displayNoReviews();
+                return;
+            }
+
+            let html = '';
+            reviews.forEach(review => {
+                html += `
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div>
+                                <span class="review-author">${escapeHtml(review.memberName || review.memberId || '익명')}</span>
+                                <span class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</span>
+                            </div>
+                            <span class="review-date">${formatDate(review.createdDate)}</span>
+                        </div>
+                        <div class="review-content">${escapeHtml(review.content)}</div>
+                    </div>
+                `;
+            });
+
+            container.html(html);
+        }
+
+        function displayNoReviews() {
+            $('#reviews-container').html(`
+                <div class="no-reviews">
+                    <p>아직 작성된 리뷰가 없습니다.</p>
+                    <p>첫 번째 리뷰를 작성해보세요!</p>
+                </div>
+            `);
+        }
+
+        function displayPagination(totalPages, currentPage) {
+            if (totalPages <= 1) {
+                $('#review-pagination').empty();
+                return;
+            }
+
+            let html = '';
+
+            if (currentPage > 1) {
+                html += `<li class="page-item">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">이전</a>
+                </li>`;
+            }
+
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                </li>`;
+            }
+
+            if (currentPage < totalPages) {
+                html += `<li class="page-item">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">다음</a>
+                </li>`;
+            }
+
+            $('#review-pagination').html(html);
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            loadReviews(page);
+        }
+
+        function updateReviewCount(count) {
+            $('#review-total-count').text(`(${count})`);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        async function addToCart() {
+            const paramData = {
+                itemId: $("#itemId").val(),
+                count: $("#count").val()
+            };
+
+            try {
+                const res = await tokenManager.fetchWithToken("/cart", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(paramData)
+                });
+
+                if (res.ok) {
+                    if (confirm("장바구니에 상품이 담겼습니다. 장바구니로 이동하시겠습니까?")) {
+                        location.href = "/cart";
+                    }
+                } else if (res.status === 401) {
+                    alert("로그인 후 이용해주세요");
+                    location.href = "/members/login";
+                } else {
+                    const text = await res.text();
+                    alert(text);
+                }
+            } catch (err) {
+                console.error("장바구니 요청 실패:", err);
+                alert("장바구니 요청 중 오류가 발생했습니다.");
+            }
+        }
+        async function order(){
+            var paramData = {
+                itemId : $("#itemId").val(),
+                count : $("#count").val()
+            };
+
+            try {
+                const res = await tokenManager.fetchWithToken("/cart", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(paramData)
+                });
+
+                if (res.ok) {
+                    location.href = '/cart';
+                } else if (res.status === 401) {
+                    alert('로그인 후 이용해주세요');
+                    location.href = '/members/login';
+                } else {
+                    const errorText = await res.text();
+                    alert(errorText);
+                }
+            } catch (err) {
+                console.error("주문 요청 실패:", err);
+                alert("주문 요청 중 오류가 발생했습니다.");
+            }
+        }
+
+        function addLike(itemId) {
+            const url = "/item/" + itemId + "/like";
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                }
+            }).then(response => {
+                if (response.ok) {
+                    const likeCountElement = document.getElementById('like-count');
+                    let currentLikes = parseInt(likeCountElement.innerText);
+                    likeCountElement.innerText = currentLikes + 1;
+                    alert('이 상품을 좋아합니다.');
+                } else {
+                    alert('좋아요 처리에 실패했습니다. 다시 시도해주세요.');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다.');
+            });
+        }
+    </script>
+</div>
+</body>
+</html>

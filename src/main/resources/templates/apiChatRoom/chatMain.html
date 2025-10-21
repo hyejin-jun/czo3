@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>오픈 채팅</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body>
+<h2>Chat Test</h2>
+
+<label>Room ID: <input type="hidden" id="roomId"/></label>
+<div class="room-controls">
+    <button class="room-button" onclick="createRoom()">Create Room</button>
+    <!--<button onclick="joinRoom()">Join Room</button>-->
+    <button class="room-button" onclick="leaveRoom()">Leave Room</button>
+    <button class="room-button" onclick="exitRoom()">Exit Room</button>
+    <button class="room-button" id="refreshBtn">🔄 Refresh Rooms</button>
+</div>
+
+<div class="rooms-container">
+    <div>
+        <h3 class="section-title">Chat Rooms</h3>
+        <ul id="chatRooms"></ul>
+    </div>
+
+    <div>
+        <h3 class="section-title">My Chat Rooms</h3>
+        <ul id="myChatRooms"></ul>
+    </div>
+</div>
+
+<div>
+    <h3 class="section-title" id="participants-title">Participants</h3>
+    <div id="participants"></div>
+</div>
+
+<div>
+    <h3 class="section-title" id="chatMessages-title">Chat Messages</h3>
+    <div id="chatMessages"></div>
+</div>
+
+<div style="display: flex; align-items: center; gap: 5px; margin-top: 5px;">
+    <input type="file" id="chatRoomInput" multiple data-type="chat">
+    <button type="button" class="btn-submit uploadBtn" data-type="chat">업로드</button>
+</div>
+
+<div id="preview"></div>
+
+<div style="display:flex; gap:5px; margin-top:5px;">
+    <input type="text" id="messageInput" placeholder="Type a message..."/>
+    <button id="sendBtn" onclick="sendMessage()">Send</button>
+</div>
+
+<script src="/js/tokenManager.js"></script>
+<script type="module" th:src="@{/js/uploadImages.js}"></script>
+
+<script>
+    let stompClient = null;
+    let roomId = null;
+    let roomSubscription = null;
+    let participantsSubscription = null;
+    let participantMap = new Map();
+    let myId = null;
+    let uploadedImages = []; // 이미지 URL 저장
+
+    async function fetchMyId() {
+        try {
+            const res = await window.tokenManager.fetchWithToken('/api/members/me');
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || "인증 정보 없음");
+            myId = data.data.mid;
+        } catch(e) { console.error(e); myId = null; }
+    }
+
+    async function connectWebSocket() {
+        return new Promise((resolve, reject) => {
+            const socket = new SockJS('/ws/chat');
+            stompClient = Stomp.over(socket);
+            const token = window.tokenManager.getAccessToken();
+            stompClient.connect(
+                { Authorization: 'Bearer ' + token },
+                frame => {
+                    console.log("STOMP connected?", stompClient.connected); // ← 여기에 찍기
+                    resolve();
+                },
+                err => reject(err)
+            );
+        });
+    }
+
+    function subscribeRoom(id) {
+        if (!stompClient) return;
+        if (roomSubscription) roomSubscription.unsubscribe();
+        roomSubscription = stompClient.subscribe(`/topic/chat-room-${id}`, msg => {
+            const data = JSON.parse(msg.body);
+            showMessage(data.senderId, data.content, data.messageType, data.createdAt, data.imageUrl);
+        });
+    }
+
+    function subscribeParticipants(id) {
+        if (!stompClient) return;
+        if (participantsSubscription) participantsSubscription.unsubscribe();
+        participantsSubscription = stompClient.subscribe(`/topic/chat-room-${id}/participants`, msg => {
+            updateParticipantListUI(JSON.parse(msg.body));
+        });
+    }
+
+    function updateParticipantListUI(participants) {
+        const container = document.getElementById('participants');
+        container.innerHTML = '';
+        participantMap.clear();
+        participants.forEach(p => {
+            participantMap.set(p.id, { name: p.name, profileImagePath: p.profileImagePath });
+            const div = document.createElement('div');
+            div.className = 'participant-item';
+            const imgSrc = p.profileImagePath ? `/uploads/${p.profileImagePath}` : '/images/default_profile.png';
+            div.innerHTML = `<img src="${imgSrc}" alt="${p.name}"><span>${p.name || '알 수 없음'}</span>`;
+            div.onclick = () => alert(p.id + '과 1:1 대화 기능 (TODO)');
+            container.appendChild(div);
+        });
+    }
+
+    // 참가자와 채팅 메시지 영역 토글 함수
+    function showChatUI(show) {
+        const displayValue = show ? 'block' : 'none';
+        const flexValue = show ? 'flex' : 'none';
+
+        // 숨김/보이기 대상만
+        document.getElementById('participants-title').style.display = displayValue;
+        document.getElementById('participants').style.display = flexValue;
+
+        document.getElementById('chatMessages-title').style.display = displayValue;
+        document.getElementById('chatMessages').style.display = displayValue;
+
+        document.getElementById('chatRoomInput').style.display = displayValue;
+
+        document.getElementById('messageInput').style.display = displayValue;
+        document.getElementById('sendBtn').style.display = displayValue;
+
+        const chatUploadBtn = document.querySelector('.uploadBtn[data-type="chat"]');
+        if (chatUploadBtn) chatUploadBtn.style.display = displayValue;
+    }
+
+    function showMessage(senderId, content, type, createdAt, imageUrl) {
+        const imageUrls = imageUrl ? [imageUrl] : [];
+
+        // content와 이미지 둘 다 없으면 표시하지 않음
+        if ((!content || content.trim() === '') && (!imageUrls || imageUrls.length === 0)) return;
+
+        const chatDiv = document.getElementById('chatMessages');
+        const participant = participantMap.get(senderId);
+        const displayName = type === "JOIN" || type === "EXIT"? senderId : participant?.name;
+        const profileImgSrc = participant?.profileImagePath ? `/uploads/${participant.profileImagePath}` : '/images/default_profile.png';
+
+        const dateObj = new Date(createdAt.replace(' ', 'T'));
+        if (isNaN(dateObj)) return;
+        const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const dateStr = dateObj.toLocaleDateString();
+
+        if (!chatDiv.innerHTML.includes(dateStr))
+            chatDiv.innerHTML += `<div style="text-align:center; color:gray;">${dateStr}</div>`;
+
+        const isMe = senderId === myId;
+        const bg = isMe ? '#DCF8C6' : '#FFF';
+        const border = isMe ? '#DCF8C6' : '#ccc';
+
+        // 텍스트 + 이미지 블록 통합
+        const htmlContainer = document.createElement('div');
+        htmlContainer.style.cssText = `display:flex; justify-content:${isMe ? 'flex-end' : 'flex-start'}; margin-bottom:5px;`;
+
+        let imagesHtml = '';
+        if (imageUrls && imageUrls.length > 0) {
+            imagesHtml = imageUrls.map(url => `<img src="${url}" style="max-width:200px; max-height:200px; border-radius:5px; margin:2px;">`).join('');
+        }
+
+        htmlContainer.innerHTML = `
+    <div style="display:flex; flex-direction:column; background:${bg}; border:1px solid ${border}; border-radius:5px; padding:5px 10px; max-width:70%;">
+        <div style="display:flex; align-items:center; margin-bottom:3px;">
+            ${!isMe ? `<img src="${profileImgSrc}" style="width:25px;height:25px;border-radius:50%;margin-right:5px;">` : ''}
+            <span><b>${displayName}</b>${content ? `: ${content}` : ''}</span>
+            ${isMe ? `<img src="${profileImgSrc}" style="width:25px;height:25px;border-radius:50%;margin-left:5px;">` : ''}
+        </div>
+        ${imagesHtml ? `<div style="display:flex; flex-wrap:wrap; gap:5px;">${imagesHtml}</div>` : ''}
+        <div style="font-size:11px;color:gray; text-align:right;">${timeStr}</div>
+    </div>
+    `;
+
+        chatDiv.appendChild(htmlContainer);
+        scrollToBottom(chatDiv);
+    }
+
+    function scrollToBottom(element) {
+        // 반복적으로 스크롤 시도
+        let prevScrollTop = -1;
+        const interval = setInterval(() => {
+            element.scrollTop = element.scrollHeight;
+            // 더 이상 스크롤 높이가 변하지 않으면 종료
+            if (element.scrollTop === prevScrollTop) {
+                clearInterval(interval);
+            } else {
+                prevScrollTop = element.scrollTop;
+            }
+        }, 16); // 60fps
+    }
+
+    async function refreshRooms() {
+        const btn=document.getElementById('refreshBtn'); btn.disabled=true; btn.textContent='Loading...';
+        try{
+            const res=await window.tokenManager.fetchWithToken('/api/chatRoom/all');
+            const result=await res.json();
+            if(!result.success) return;
+            const ul=document.getElementById('chatRooms'); ul.innerHTML='';
+            result.data.forEach(r=>{
+                const li = document.createElement('li');
+                li.textContent = `#${r.id} ${r.name} (${r.participantNumber}명)`;
+
+                li.onclick = async () => {
+                    document.getElementById('roomId').value = r.id;
+                    roomId = r.id; // 전역 roomId 설정
+                    await joinRoom(); // 클릭 시 바로 입장
+                };
+
+                ul.appendChild(li);
+            });
+        }catch(e){console.error(e); alert('방 목록 조회 실패');} finally{btn.disabled=false; btn.textContent='🔄 Refresh Rooms';}
+    }
+
+    async function refreshMyRooms() {
+        const ul=document.getElementById('myChatRooms'); ul.innerHTML='Loading...';
+        try{
+            const res=await window.tokenManager.fetchWithToken('/api/chatRoom/me');
+            const result=await res.json();
+            if(!result.success){ul.innerHTML='조회 실패'; return;}
+            ul.innerHTML='';
+            result.data.forEach(r=>{
+                const li = document.createElement('li');
+                li.textContent = `#${r.id} ${r.name} (${r.participantNumber}명)`;
+
+                li.onclick = async () => {
+                    document.getElementById('roomId').value = r.id;
+                    roomId = r.id; // 전역 roomId 설정
+                    await joinRoom(); // 클릭 시 바로 입장
+                };
+
+                ul.appendChild(li);
+            });
+        }catch(e){console.error(e); ul.innerHTML='조회 실패';}
+    }
+
+    // 방 입장 시
+    async function joinRoom() {
+        const inputRoomId = document.getElementById('roomId').value;
+        if (!inputRoomId) return;
+        roomId = inputRoomId;
+
+        try {
+            await ensureConnected();
+
+            await window.tokenManager.fetchWithToken(`/api/chatRoomParticipant/${roomId}`, { method: 'POST' });
+
+            const resParticipants = await window.tokenManager.fetchWithToken(`/api/chatRoomParticipant/${roomId}`);
+            const participantResult = await resParticipants.json();
+            if (participantResult.success && participantResult.data) {
+                updateParticipantListUI(participantResult.data);
+            }
+
+            const res = await window.tokenManager.fetchWithToken(`/api/chatMessage/${roomId}`);
+            const result = await res.json();
+            if (result.success) {
+                const chatDiv = document.getElementById('chatMessages');
+                chatDiv.innerHTML = '';
+                result.data.forEach(msg => showMessage(msg.senderId, msg.content, msg.messageType, msg.createdAt, msg.imageUrl));
+                setTimeout(() => {
+                    chatDiv.scrollTop = chatDiv.scrollHeight;
+                }, 0);
+            }
+
+            showChatUI(true); // 채팅방 UI 보여주기
+
+        } catch (e) {
+            alert('Failed to join room: ' + e.message);
+        }
+    }
+
+    // 방 나가기
+    async function leaveRoom() {
+        if(!roomId) return;
+        try{
+            await window.tokenManager.fetchWithToken(`/api/chatRoomParticipant/${roomId}`,{method:'PATCH'});
+            if(roomSubscription){ roomSubscription.unsubscribe(); roomSubscription = null; }
+            if(participantsSubscription){ participantsSubscription.unsubscribe(); participantsSubscription = null; }
+
+            document.getElementById('participants').innerHTML='';
+            document.getElementById('chatMessages').innerHTML='';
+
+            showChatUI(false); // 채팅방 UI 숨기기
+
+        }catch(e){ alert('Failed to leave room: '+e.message); }
+    }
+
+    async function exitRoom() {
+        if(!roomId) return;
+        try{
+            await window.tokenManager.fetchWithToken(`/api/chatRoomParticipant/${roomId}`,{method:'DELETE'});
+            if(roomSubscription){ roomSubscription.unsubscribe(); roomSubscription=null; }
+            if(participantsSubscription){ participantsSubscription.unsubscribe(); participantsSubscription=null; }
+
+            document.getElementById('participants').innerHTML='';
+            document.getElementById('chatMessages').innerHTML='';
+
+            showChatUI(false); // 채팅방 UI 숨기기
+
+        }catch(e){ alert('Failed to exit room: '+e.message); }
+    }
+
+    async function createRoom(){
+        const roomName=prompt("방 이름 입력:"); if(!roomName) return;
+        try{
+            const res=await window.tokenManager.fetchWithToken('/api/chatRoom/',{method:'POST',headers:{"Content-Type":"application/json"},body:JSON.stringify({name:roomName,type:"GROUP"})});
+            const result=await res.json();
+            if(result?.success){alert("방 생성 성공: ID="+result.data.id); document.getElementById('roomId').value=result.data.id; refreshRooms(); refreshMyRooms();}
+            else alert("방 생성 실패: "+(result?.error||"알 수 없는 오류"));
+        }catch(e){
+            alert("방 생성 실패: "+e.message);
+        }
+    }
+
+    async function ensureConnected() {
+        if (!stompClient || !stompClient.connected) {
+            await connectWebSocket();
+            console.log("WebSocket connected!");
+        }
+
+        if (roomId) {
+            subscribeRoom(roomId);
+            subscribeParticipants(roomId);
+        }
+    }
+
+
+    async function sendMessage() {
+        if (!roomId) return;
+
+        await ensureConnected();
+
+        const content = document.getElementById('messageInput').value;
+        if (!content && uploadedImages.length === 0) return;
+
+        const message = { content, imageUrls: uploadedImages };
+
+        stompClient.send(`/app/chat.send.${roomId}`, { "content-type": "application/json" }, JSON.stringify(message));
+
+        // 입력 초기화만
+        document.getElementById('messageInput').value = '';
+        uploadedImages = [];
+        document.getElementById('preview').innerHTML = '';
+    }
+
+
+
+    // ================= 초기화 =================
+    window.onload=async ()=>{
+        showChatUI(false);
+
+        await fetchMyId();
+        refreshRooms();
+        refreshMyRooms();
+    };
+
+    document.getElementById('refreshBtn').addEventListener('click',()=>{refreshRooms(); refreshMyRooms();});
+
+</script>
+</body>
+</html>

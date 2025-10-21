@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+
+<head>
+    <link rel="stylesheet" href="/css/style.css">
+
+
+    <script>
+        /**
+         * 이미지 미리보기 표시 함수
+         */
+        function previewImages(event) {
+            const preview = document.getElementById('preview');
+            if (!preview) return;
+
+            preview.innerHTML = '';
+            const files = event.target.files;
+
+            if (files.length > 5) {
+                alert("이미지는 최대 5장까지 업로드 가능합니다.");
+                event.target.value = "";
+                return;
+            }
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = "100px";
+                    img.style.maxHeight = "100px";
+                    img.style.margin = "5px";
+                    img.style.border = "1px solid #ddd";
+                    img.style.borderRadius = "4px";
+                    img.style.objectFit = "cover";
+                    preview.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        /**
+         * 리뷰 등록 처리 함수
+         */
+        async function submitReview() {
+            const ratingInput = document.getElementById('ratingInput');
+            const submitBtn = document.getElementById('submitBtn');
+            const form = document.getElementById('reviewForm');
+
+            if (!submitBtn || !ratingInput || !form) {
+                alert('페이지 요소 로드 오류. 새로고침 후 다시 시도해주세요.');
+                console.error('필수 DOM 요소 누락');
+                return;
+            }
+
+            const rating = parseInt(ratingInput.value);
+            if (rating < 1 || rating > 5) {
+                alert('평점을 1점에서 5점 사이로 선택해주세요.');
+                return;
+            }
+
+            const formData = new FormData(form);
+            const content = formData.get('content')?.trim();
+
+            if (!content) {
+                alert('리뷰 내용을 입력해주세요.');
+                return;
+            }
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = '등록 중...';
+
+                const csrfTokenElement = document.querySelector('meta[name="_csrf"]');
+                const csrfHeaderElement = document.querySelector('meta[name="_csrf_header"]');
+
+                const headers = {};
+                if (csrfTokenElement && csrfHeaderElement) {
+                    headers[csrfHeaderElement.getAttribute('content')] = csrfTokenElement.getAttribute('content');
+                }
+
+                const response = await fetch('/reviews', {
+                    method: 'POST',
+                    headers: headers,
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`서버 오류: ${response.status} - ${errorText}`);
+                }
+
+                alert('리뷰가 성공적으로 등록되었습니다!');
+
+                // 리뷰 목록 페이지로 리다이렉트
+                const itemId = formData.get('itemId');
+                if (itemId) {
+                    window.location.href = '/reviews/view/list/' + itemId;
+                } else {
+                    // itemId가 없는 경우 URL 파라미터에서 가져오기
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const urlItemId = urlParams.get('itemId');
+                    if (urlItemId) {
+                        window.location.href = '/reviews/view/list/' + urlItemId;
+                    } else {
+                        // 그래도 없으면 메인 페이지로
+                        window.location.href = '/';
+                    }
+                }
+
+            } catch (err) {
+                console.error('리뷰 등록 에러:', err);
+                alert('리뷰 등록 중 오류가 발생했습니다: ' + err.message);
+
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '리뷰 등록';
+                }
+            }
+        }
+
+        /**
+         * 취소 버튼 처리 함수
+         */
+        function goBack() {
+            if (confirm('작성 중인 내용이 사라집니다. 정말 취소하시겠습니까?')) {
+                // 취소 시에도 리뷰 목록으로 이동
+                const urlParams = new URLSearchParams(window.location.search);
+                const itemId = urlParams.get('itemId');
+                if (itemId) {
+                    window.location.href = '/reviews/view/list/' + itemId;
+                } else {
+                    window.location.href = '/';
+                }
+            }
+        }
+
+        // DOM 로드가 완료된 후 숨겨진 요소를 보이게 합니다.
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('stars')?.classList.remove('temp-hidden');
+            document.getElementById('ratingText')?.classList.remove('temp-hidden');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const itemId = urlParams.get('itemId');
+            if (itemId) {
+                console.log('페이지 로드 완료. 상품 ID:', itemId);
+            }
+        });
+    </script>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="itemForm-body">
+        <div class="form-container">
+
+            <div class="cool"><h1>리뷰 등록</h1>
+                <div class="form-card">
+                    <form id="reviewForm" enctype="multipart/form-data" method="post">
+                        <table class="form-table">
+                            <tr>
+                                <td class="label">회원 ID:</td>
+                                <td class="input">
+                                    <input type="text" name="memberId" th:value="${memberId}" class="clean-input" readonly>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label">상품명:</td>
+                                <td class="input">
+                                    <input type="text" th:value="${orderedItem.itemNm}" class="clean-input" readonly>
+                                    <input type="hidden" name="itemId" th:value="${orderedItem.id}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label">평점:</td>
+                                <td class="input">
+                                    <div class="star-rating">
+                                        <div class="stars temp-hidden" id="stars">
+                                            <input type="number" name="rating" id="ratingInput"
+                                                   min="1" max="5" value="1" step="1"
+                                                   class="clean-input rating-input"
+                                                   required>
+                                        </div>
+                                        <div class="rating-text selected temp-hidden" id="ratingText">평점을 1점에서 5점 사이로 입력해주세요</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label">내용:</td>
+                                <td class="input">
+                                    <textarea name="content" rows="4" class="clean-input" placeholder="상품에 대한 솔직한 리뷰를 작성해주세요." required></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label">이미지 업로드:</td>
+                                <td class="input">
+                                    <input type="file" name="images" multiple accept="image/*"
+                                           onchange="previewImages(event)">
+                                    <small class="upload-info">최대 5장까지 업로드 가능</small>
+                                    <div id="preview" class="preview-area"></div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="btn-wrapper">
+                            <button type="button" class="btn-write" onclick="submitReview()" id="submitBtn">리뷰 등록</button>
+                            <button type="button" class="btn-del" onclick="goBack()">취소</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="result" class="result-area"></div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
